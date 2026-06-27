@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ARISE — Shadow Connect</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+  :root {
+    --bg-primary:   #0A0A0F;
+    --bg-secondary: #12101A;
+    --bg-card:      #1A1730;
+    --bg-card2:     #221E3A;
+    --purple:       #8B5CF6;
+    --purple-dark:  #6D28D9;
+    --purple-deep:  #4C1D95;
+    --cyan:         #06B6D4;
+    --gold:         #FBBF24;
+    --text-1:       #F1F0FF;
+    --text-2:       #9B97C0;
+    --text-m:       #5B5880;
+  }
+  html, body { width:100%; height:100%; background:#000; display:flex; justify-content:center; align-items:flex-start; overflow:hidden; }
+  #app { width:390px; height:100dvh; background:var(--bg-primary); position:relative; overflow:hidden; display:flex; flex-direction:column; }
+
+  .screen { position:absolute; inset:0; display:flex; flex-direction:column; transition:opacity .3s, transform .3s; }
+  .screen.hidden { opacity:0; pointer-events:none; transform:scale(.96); }
+
+  /* ── MENU ─────────────────────────── */
+  #menu {
+    background: radial-gradient(ellipse 200% 80% at 50% 110%, #1E1B4B44 0%, transparent 70%), var(--bg-primary);
+    align-items:center; justify-content:space-between; padding: 48px 24px 32px;
+  }
+  .arise-logo { text-align:center; }
+  .arise-logo h1 {
+    font:900 64px/1 'Segoe UI', sans-serif; letter-spacing:12px;
+    background: linear-gradient(180deg,#A855F7 0%,#6D28D9 50%,#3B82F6 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .arise-logo p { color:var(--text-2); font:600 13px/1 'Segoe UI', sans-serif; letter-spacing:6px; margin-top:6px; }
+  .orb-row { display:flex; gap:14px; justify-content:center; align-items:center; }
+  .orb-demo { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; }
+  .modes-section { width:100%; }
+  .modes-label { color:var(--text-m); font:700 11px/1 'Segoe UI',sans-serif; letter-spacing:4px; text-align:center; margin-bottom:14px; }
+  .mode-btn {
+    width:100%; background:linear-gradient(90deg,#1E1B4B,#0F0D24);
+    border:1px solid #ffffff14; border-radius:16px; padding:16px 20px;
+    display:flex; align-items:center; gap:16px; margin-bottom:12px;
+    cursor:pointer; transition:transform .15s, border-color .15s;
+  }
+  .mode-btn:active { transform:scale(.97); }
+  .mode-btn:hover  { border-color:#8B5CF644; }
+  .mode-icon {
+    width:44px; height:44px; border-radius:12px; background:var(--purple);
+    display:flex; align-items:center; justify-content:center;
+    font:900 20px/1 'Segoe UI',sans-serif; color:#fff; flex-shrink:0;
+  }
+  .mode-text { flex:1; }
+  .mode-title { color:var(--text-1); font:700 15px/1 'Segoe UI',sans-serif; }
+  .mode-rank  { color:var(--purple); font:600 12px/1 'Segoe UI',sans-serif; margin-top:4px; }
+  .mode-arrow { color:var(--text-m); font-size:18px; }
+  .best-bar {
+    width:100%; background:var(--bg-card); border-radius:16px; padding:14px 20px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .best-left { display:flex; align-items:center; gap:10px; }
+  .best-label { color:var(--text-2); font:600 12px/1 'Segoe UI',sans-serif; }
+  .best-val { color:var(--text-1); font:700 18px/1 'Segoe UI',sans-serif; }
+
+  /* ── GAME ─────────────────────────── */
+  #game { background:var(--bg-primary); padding:0; }
+  .top-bar { display:flex; align-items:center; justify-content:space-between; padding:14px 20px 10px; flex-shrink:0; }
+  .pause-btn {
+    width:40px; height:40px; background:var(--bg-card); border-radius:12px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    font-size:18px; border:none; color:var(--text-1);
+  }
+  .score-display { display:flex; align-items:center; gap:8px; background:var(--bg-card); border-radius:12px; padding:8px 16px; }
+  #score-val { color:var(--text-1); font:700 18px/1 'Segoe UI',sans-serif; }
+  .level-badge { background:var(--purple); border-radius:10px; padding:6px 14px; color:#fff; font:700 13px/1 'Segoe UI',sans-serif; }
+  .timer-section { padding:0 20px 10px; flex-shrink:0; }
+  .timer-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .timer-label { color:var(--text-m); font:700 11px/1 'Segoe UI',sans-serif; letter-spacing:3px; }
+  #timer-val { color:var(--cyan); font:700 16px/1 'Segoe UI',sans-serif; }
+  .timer-bar-bg { width:100%; height:8px; background:var(--bg-card); border-radius:99px; overflow:hidden; }
+  #timer-fill { height:100%; border-radius:99px; transition:width .5s linear; background:linear-gradient(90deg, var(--purple), var(--cyan)); }
+  .combo-row { display:flex; align-items:center; gap:10px; padding:4px 20px 10px; flex-shrink:0; }
+  .combo-label { color:var(--text-2); font:700 11px/1 'Segoe UI',sans-serif; letter-spacing:2px; }
+  #combo-val { color:var(--purple); font:900 20px/1 'Segoe UI',sans-serif; display:inline-block; }
+  #combo-val.pop { animation:combo-pop .25s ease; }
+  @keyframes combo-pop { 0%{transform:scale(1)} 50%{transform:scale(1.5)} 100%{transform:scale(1)} }
+  .grid-wrap { flex:1; display:flex; align-items:center; justify-content:center; padding:0 16px; }
+  #grid-canvas { border-radius:20px; display:block; touch-action:none; }
+  .bottom-section { padding:14px 20px 24px; flex-shrink:0; }
+  .moves-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .stat-block { text-align:center; }
+  .stat-val   { color:var(--text-1); font:700 22px/1 'Segoe UI',sans-serif; }
+  .stat-label { color:var(--text-m); font:700 10px/1 'Segoe UI',sans-serif; letter-spacing:2px; margin-top:4px; }
+  .stat-val.cyan { color:var(--cyan); }
+  .hint-btn {
+    width:100%; border:none; border-radius:16px; padding:16px;
+    background:linear-gradient(90deg,var(--purple-dark),var(--purple-deep));
+    color:#fff; font:700 14px/1 'Segoe UI',sans-serif; letter-spacing:3px;
+    cursor:pointer; transition:opacity .15s;
+  }
+  .hint-btn:active { opacity:.8; }
+
+  /* ── OVERLAY ──────────────────────── */
+  #overlay {
+    position:absolute; inset:0; background:#00000099; backdrop-filter:blur(8px);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:20px; z-index:100;
+  }
+  #overlay.hidden { display:none; }
+  .overlay-card {
+    background:var(--bg-card); border:1px solid #ffffff14; border-radius:24px;
+    padding:36px 40px; text-align:center; width:300px;
+  }
+  .overlay-title { color:var(--text-1); font:900 28px/1 'Segoe UI',sans-serif; letter-spacing:4px; }
+  .overlay-sub   { color:var(--text-2); font:600 13px/1 'Segoe UI',sans-serif; margin-top:8px; }
+  .overlay-score { color:var(--gold); font:900 40px/1 'Segoe UI',sans-serif; margin:20px 0 4px; }
+  .overlay-score-lbl { color:var(--text-m); font:600 11px/1 'Segoe UI',sans-serif; letter-spacing:3px; }
+  .ov-btn { width:100%; border:none; border-radius:14px; padding:15px; font:700 14px/1 'Segoe UI',sans-serif; letter-spacing:2px; cursor:pointer; margin-top:12px; transition:opacity .15s; }
+  .ov-btn:active { opacity:.8; }
+  .ov-btn.primary   { background:var(--purple); color:#fff; }
+  .ov-btn.secondary { background:var(--bg-card2); color:var(--text-2); border:1px solid #ffffff14; }
+
+  /* ── FLOAT SCORE ──────────────────── */
+  .float-score {
+    position:absolute; pointer-events:none; font:900 20px/1 'Segoe UI',sans-serif;
+    color:var(--gold); text-shadow:0 0 12px #FBBF2488;
+    animation:float-up .8s ease forwards; z-index:50;
+    transform: translateX(-50%);
+  }
+  @keyframes float-up { 0%{opacity:1;transform:translateX(-50%) translateY(0)} 100%{opacity:0;transform:translateX(-50%) translateY(-60px)} }
+
+  #line-canvas { position:absolute; inset:0; pointer-events:none; z-index:10; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- MENU -->
+  <div id="menu" class="screen">
+    <div class="arise-logo"><h1>ARISE</h1><p>SHADOW CONNECT</p></div>
+    <div class="orb-row" id="menu-orbs"></div>
+    <div class="modes-section">
+      <p class="modes-label">SELECCIONA MODO</p>
+      <div class="mode-btn" onclick="startGame(4)">
+        <div class="mode-icon">4</div>
+        <div class="mode-text"><div class="mode-title">CONNECT 4</div><div class="mode-rank">Rango E · Principiante</div></div>
+        <div class="mode-arrow">›</div>
+      </div>
+      <div class="mode-btn" onclick="startGame(5)">
+        <div class="mode-icon" style="background:linear-gradient(135deg,#06B6D4,#0891B2)">5</div>
+        <div class="mode-text"><div class="mode-title">CONNECT 5</div><div class="mode-rank" style="color:var(--cyan)">Rango C · Cazador</div></div>
+        <div class="mode-arrow">›</div>
+      </div>
+      <div class="mode-btn" onclick="startGame(6)">
+        <div class="mode-icon" style="background:linear-gradient(135deg,#FBBF24,#D97706)">6</div>
+        <div class="mode-text"><div class="mode-title">CONNECT 6</div><div class="mode-rank" style="color:var(--gold)">Rango S · Monarca</div></div>
+        <div class="mode-arrow">›</div>
+      </div>
+    </div>
+    <div class="best-bar">
+      <div class="best-left"><span>🏆</span><span class="best-label">Mejor Puntuación</span></div>
+      <span class="best-val" id="best-display">0</span>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div id="game" class="screen hidden">
+    <div class="top-bar">
+      <button class="pause-btn" onclick="togglePause()">⏸</button>
+      <div class="score-display"><span>⭐</span><span id="score-val">0</span></div>
+      <div class="level-badge" id="level-badge">LV.1</div>
+    </div>
+    <div class="timer-section">
+      <div class="timer-row"><span class="timer-label">TIEMPO</span><span id="timer-val">02:00</span></div>
+      <div class="timer-bar-bg"><div id="timer-fill" style="width:100%"></div></div>
+    </div>
+    <div class="combo-row"><span class="combo-label">COMBO</span><span id="combo-val">x1</span></div>
+    <div class="grid-wrap"><canvas id="grid-canvas"></canvas></div>
+    <div class="bottom-section">
+      <div class="moves-row">
+        <div class="stat-block"><div class="stat-val" id="moves-val">20</div><div class="stat-label">MOVIMIENTOS</div></div>
+        <div class="stat-block"><div class="stat-val cyan" id="target-val">5,000</div><div class="stat-label">OBJETIVO</div></div>
+      </div>
+      <button class="hint-btn" onclick="useHint()">💡 PISTA</button>
+    </div>
+  </div>
+
+  <canvas id="line-canvas"></canvas>
+
+  <!-- OVERLAY -->
+  <div id="overlay" class="hidden">
+    <div class="overlay-card">
+      <div class="overlay-title" id="ov-title">PAUSA</div>
+      <div class="overlay-sub"  id="ov-sub">El juego está pausado</div>
+      <div class="overlay-score" id="ov-score" style="display:none"></div>
+      <div class="overlay-score-lbl" id="ov-score-lbl" style="display:none">PUNTUACIÓN FINAL</div>
+      <button class="ov-btn primary" id="ov-btn1" onclick="resumeOrRestart()">CONTINUAR</button>
+      <button class="ov-btn secondary" onclick="goMenu()">MENÚ PRINCIPAL</button>
+    </div>
+  </div>
+
+</div>
+<script>
+const ORB_TYPES = [
+  { name:'Hunter', colors:['#A855F7','#6D28D9','#4C1D95'], glow:'#A855F766', icon:'⚔️' },
+  { name:'Shadow', colors:['#3730A3','#1E1B4B','#0F0D24'], glow:'#6D28D944', icon:'🌑' },
+  { name:'Magic',  colors:['#22D3EE','#0891B2','#164E63'], glow:'#22D3EE66', icon:'✨' },
+  { name:'Power',  colors:['#F87171','#DC2626','#7F1D1D'], glow:'#F8717166', icon:'🔥' },
+  { name:'Gold',   colors:['#FBBF24','#D97706','#78350F'], glow:'#FBBF2466', icon:'⭐' },
+];
+const ROWS=6, COLS=6, TOTAL_TIME=120;
+
+let G = {
+  mode:4, score:0, best:+localStorage.getItem('arise_best')||0,
+  moves:20, combo:1, comboCount:0,
+  timeLeft:TOTAL_TIME, timerInterval:null,
+  grid:[], dragging:false, path:[],
+  paused:false, gameOver:false, level:1, animating:false,
+};
+
+const canvas = document.getElementById('grid-canvas');
+const ctx    = canvas.getContext('2d');
+const lineC  = document.getElementById('line-canvas');
+const lineCtx= lineC.getContext('2d');
+
+/* ── CANVAS SIZE ── */
+function setupCanvas() {
+  const wrap = document.querySelector('.grid-wrap');
+  const s = Math.min(wrap.clientWidth - 0, wrap.clientHeight, 340);
+  canvas.width = canvas.height = s;
+  lineC.width  = document.getElementById('app').clientWidth;
+  lineC.height = document.getElementById('app').clientHeight;
+}
+function cs() { return canvas.width / COLS; }
+function center(r,c) { const z=cs(); return {x:c*z+z/2, y:r*z+z/2}; }
+function hit(x,y) {
+  const z=cs();
+  const c=Math.floor(x/z), r=Math.floor(y/z);
+  return (r>=0&&r<ROWS&&c>=0&&c<COLS) ? {r,c} : null;
+}
+function adj(a,b) { return Math.abs(a.r-b.r)<=1&&Math.abs(a.c-b.c)<=1&&!(a.r===b.r&&a.c===b.c); }
+
+/* ── GRID ── */
+function rndOrb() { return Math.floor(Math.random()*ORB_TYPES.length); }
+function makeGrid() {
+  G.grid=[];
+  for(let r=0;r<ROWS;r++){G.grid[r]=[];for(let c=0;c<COLS;c++)G.grid[r][c]={t:rndOrb(),sel:false,hint:false,sc:1,op:1};}
+}
+
+/* ── DRAW ── */
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const z=cs(), rad=z*0.38;
+
+  // bg
+  ctx.fillStyle='#1A1730';
+  rRect(ctx,0,0,canvas.width,canvas.height,20); ctx.fill();
+
+  // watermark
+  ctx.save(); ctx.globalAlpha=0.03;
+  ctx.font=`900 ${canvas.width*.35}px 'Segoe UI',sans-serif`;
+  ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('ARISE',canvas.width/2,canvas.height/2); ctx.restore();
+
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) {
+    const cell=G.grid[r][c], orb=ORB_TYPES[cell.t];
+    const {x,y}=center(r,c);
+    ctx.save();
+    ctx.globalAlpha=cell.op;
+    ctx.translate(x,y); ctx.scale(cell.sc,cell.sc);
+
+    if(cell.hint) {
+      ctx.shadowColor='#FBBF24'; ctx.shadowBlur=16;
+      ctx.fillStyle='#FBBF2422';
+      ctx.beginPath(); ctx.arc(0,0,rad+4,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur=0;
+    }
+    if(cell.sel) {
+      ctx.shadowColor=orb.colors[0]; ctx.shadowBlur=20;
+      ctx.strokeStyle=orb.colors[0]; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.arc(0,0,rad+5,0,Math.PI*2); ctx.stroke();
+      ctx.shadowBlur=0;
+    }
+
+    // body
+    const g=ctx.createRadialGradient(-rad*.3,-rad*.3,rad*.05,0,0,rad);
+    g.addColorStop(0,orb.colors[0]); g.addColorStop(.65,orb.colors[1]); g.addColorStop(1,orb.colors[2]);
+    ctx.shadowColor=cell.sel?orb.colors[0]:'transparent';
+    ctx.shadowBlur=cell.sel?14:0;
+    ctx.fillStyle=g;
+    ctx.beginPath(); ctx.arc(0,0,rad,0,Math.PI*2); ctx.fill();
+
+    // specular
+    const hl=ctx.createRadialGradient(-rad*.35,-rad*.35,0,-rad*.3,-rad*.3,rad*.6);
+    hl.addColorStop(0,'rgba(255,255,255,.38)'); hl.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.shadowBlur=0; ctx.fillStyle=hl;
+    ctx.beginPath(); ctx.arc(0,0,rad,0,Math.PI*2); ctx.fill();
+
+    // icon
+    ctx.font=`${rad*.8}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.globalAlpha=cell.op*.85; ctx.fillText(orb.icon,rad*.1,rad*.1);
+    ctx.restore();
+  }
+}
+
+function drawLines() {
+  lineCtx.clearRect(0,0,lineC.width,lineC.height);
+  if(G.path.length<2) return;
+  const off=gridOffset(), z=cs();
+  const orb=ORB_TYPES[G.grid[G.path[0].r][G.path[0].c].t];
+  lineCtx.save();
+  lineCtx.lineCap='round'; lineCtx.lineJoin='round'; lineCtx.lineWidth=z*.18;
+  lineCtx.strokeStyle=orb.colors[0]+'AA';
+  lineCtx.shadowColor=orb.colors[0]; lineCtx.shadowBlur=12;
+  lineCtx.beginPath();
+  G.path.forEach(({r,c},i)=>{
+    const px=off.x+c*z+z/2, py=off.y+r*z+z/2;
+    i===0?lineCtx.moveTo(px,py):lineCtx.lineTo(px,py);
+  });
+  lineCtx.stroke(); lineCtx.restore();
+}
+
+function gridOffset() { const r=canvas.getBoundingClientRect(); return {x:r.left,y:r.top}; }
+function rRect(ctx,x,y,w,h,r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+/* ── INPUT ── */
+function xy(e) { const t=e.touches?e.touches[0]:e, r=canvas.getBoundingClientRect(); return {x:t.clientX-r.left,y:t.clientY-r.top}; }
+canvas.addEventListener('mousedown', e=>startDrag(xy(e)));
+canvas.addEventListener('mousemove', e=>moveDrag(xy(e)));
+canvas.addEventListener('mouseup',   ()=>endDrag());
+canvas.addEventListener('touchstart',e=>{e.preventDefault();startDrag(xy(e));},{passive:false});
+canvas.addEventListener('touchmove', e=>{e.preventDefault();moveDrag(xy(e));},{passive:false});
+canvas.addEventListener('touchend',  e=>{e.preventDefault();endDrag();},{passive:false});
+
+function startDrag({x,y}) {
+  if(G.paused||G.gameOver||G.animating) return;
+  const cell=hit(x,y); if(!cell) return;
+  clearHints();
+  G.dragging=true; G.path=[cell]; G.grid[cell.r][cell.c].sel=true;
+  draw(); drawLines();
+}
+function moveDrag({x,y}) {
+  if(!G.dragging) return;
+  const cell=hit(x,y); if(!cell) return;
+  const last=G.path[G.path.length-1];
+  const ptype=G.grid[G.path[0].r][G.path[0].c].t;
+
+  // backtrack
+  if(G.path.length>=2) {
+    const prev=G.path[G.path.length-2];
+    if(prev.r===cell.r&&prev.c===cell.c) {
+      G.grid[last.r][last.c].sel=false; G.path.pop(); draw(); drawLines(); return;
+    }
+  }
+  const already=G.path.some(p=>p.r===cell.r&&p.c===cell.c);
+  if(!already&&adj(last,cell)&&G.grid[cell.r][cell.c].t===ptype) {
+    G.path.push(cell); G.grid[cell.r][cell.c].sel=true; draw(); drawLines();
+  }
+}
+function endDrag() {
+  if(!G.dragging) return;
+  G.dragging=false;
+  if(G.path.length>=G.mode) resolveMatch();
+  else { G.path.forEach(({r,c})=>G.grid[r][c].sel=false); G.path=[]; G.comboCount=0; G.combo=1; updCombo(); draw(); }
+  lineCtx.clearRect(0,0,lineC.width,lineC.height);
+}
+
+/* ── MATCH ── */
+function resolveMatch() {
+  G.animating=true;
+  const matched=[...G.path], n=matched.length;
+  const gc=matched.reduce((s,p)=>s+p.c,0)/n;
+  const gr=matched.reduce((s,p)=>s+p.r,0)/n;
+
+  G.comboCount++;
+  G.combo = G.comboCount>=3 ? Math.min(G.comboCount,10) : 1;
+  updCombo();
+
+  const pts=(n*100+(n>G.mode?(n-G.mode)*50:0))*G.combo;
+  G.score+=pts; G.moves--; G.level=Math.floor(G.score/2000)+1;
+  updScore(); floatScore(pts,gc,gr);
+
+  let f=0;
+  const anim=setInterval(()=>{
+    f++;
+    matched.forEach(({r,c})=>{G.grid[r][c].sc=Math.max(0,1-f*.15); G.grid[r][c].op=Math.max(0,1-f*.12);});
+    draw();
+    if(f>=8) {
+      clearInterval(anim);
+      matched.forEach(({r,c})=>G.grid[r][c]=null);
+      drop(); fill();
+      G.path=[]; G.animating=false; draw(); checkEnd();
+    }
+  },30);
+}
+function drop() {
+  for(let c=0;c<COLS;c++){let e=ROWS-1;for(let r=ROWS-1;r>=0;r--){if(G.grid[r][c]){G.grid[e][c]=G.grid[r][c];if(e!==r)G.grid[r][c]=null;e--;}}}
+}
+function fill() {
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(!G.grid[r][c])G.grid[r][c]={t:rndOrb(),sel:false,hint:false,sc:1,op:1};
+}
+function clearHints(){for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(G.grid[r][c])G.grid[r][c].hint=false;}
+
+/* ── UI ── */
+function fmt(n){return n.toLocaleString();}
+function updScore(){
+  document.getElementById('score-val').textContent=fmt(G.score);
+  document.getElementById('moves-val').textContent=G.moves;
+  document.getElementById('level-badge').textContent=`LV.${G.level}`;
+}
+function updCombo(){
+  const el=document.getElementById('combo-val');
+  el.textContent=`x${G.combo}`;
+  if(G.combo>1){el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');}
+  el.style.color=G.combo>=5?'var(--gold)':G.combo>=3?'var(--cyan)':'var(--purple)';
+}
+function floatScore(pts,gc,gr){
+  const off=gridOffset(), z=cs();
+  const x=off.x+gc*z+z/2, y=off.y+gr*z;
+  const el=document.createElement('div');
+  el.className='float-score'; el.textContent=`+${fmt(pts)}`;
+  el.style.left=`${x}px`; el.style.top=`${y}px`;
+  document.getElementById('app').appendChild(el);
+  el.addEventListener('animationend',()=>el.remove());
+}
+
+/* ── TIMER ── */
+function startTimer(){
+  clearInterval(G.timerInterval); G.timeLeft=TOTAL_TIME;
+  G.timerInterval=setInterval(()=>{
+    if(G.paused) return;
+    G.timeLeft--;
+    document.getElementById('timer-fill').style.width=(G.timeLeft/TOTAL_TIME*100)+'%';
+    const m=String(Math.floor(G.timeLeft/60)).padStart(2,'0'), s=String(G.timeLeft%60).padStart(2,'0');
+    document.getElementById('timer-val').textContent=`${m}:${s}`;
+    if(G.timeLeft<=0) endGame('time');
+  },1000);
+}
+
+/* ── GAME FLOW ── */
+function startGame(mode){
+  G.mode=mode; G.score=0; G.moves=mode===4?25:mode===5?20:15;
+  G.combo=1; G.comboCount=0; G.paused=false; G.gameOver=false; G.level=1;
+  const target=mode===4?3000:mode===5?5000:8000;
+  document.getElementById('target-val').textContent=fmt(target);
+  show('game'); makeGrid(); setupCanvas(); updScore(); updCombo(); startTimer(); draw();
+}
+function checkEnd(){
+  const t=G.mode===4?3000:G.mode===5?5000:8000;
+  if(G.moves<=0) endGame(G.score>=t?'win':'lose');
+  else if(G.score>=t) endGame('win');
+}
+function endGame(r){
+  G.gameOver=true; clearInterval(G.timerInterval);
+  if(G.score>G.best){G.best=G.score;localStorage.setItem('arise_best',G.best);}
+  const titles={win:'¡ARISE!',time:'TIEMPO',lose:'DERROTA'};
+  const subs={win:'¡Has superado el objetivo!',time:'Se acabó el tiempo',lose:'Sin movimientos'};
+  document.getElementById('ov-title').textContent=titles[r];
+  document.getElementById('ov-sub').textContent=subs[r];
+  document.getElementById('ov-score').textContent=fmt(G.score);
+  document.getElementById('ov-score').style.display='';
+  document.getElementById('ov-score-lbl').style.display='';
+  document.getElementById('ov-btn1').textContent='JUGAR DE NUEVO';
+  document.getElementById('overlay').classList.remove('hidden');
+}
+function togglePause(){
+  if(G.gameOver) return;
+  G.paused=!G.paused;
+  document.getElementById('ov-title').textContent='PAUSA';
+  document.getElementById('ov-sub').textContent='El juego está pausado';
+  document.getElementById('ov-score').style.display='none';
+  document.getElementById('ov-score-lbl').style.display='none';
+  document.getElementById('ov-btn1').textContent='CONTINUAR';
+  document.getElementById('overlay').classList.toggle('hidden',!G.paused);
+}
+function resumeOrRestart(){
+  if(G.gameOver){document.getElementById('overlay').classList.add('hidden');startGame(G.mode);}
+  else{G.paused=false;document.getElementById('overlay').classList.add('hidden');}
+}
+function goMenu(){
+  clearInterval(G.timerInterval); G.gameOver=true;
+  document.getElementById('overlay').classList.add('hidden');
+  document.getElementById('best-display').textContent=fmt(G.best);
+  show('menu');
+}
+
+/* ── HINT ── */
+function useHint(){
+  if(G.paused||G.gameOver||G.animating) return;
+  clearHints();
+  let best=[];
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const p=findPath(r,c,[]);if(p.length>best.length)best=p;}
+  best.slice(0,G.mode+2).forEach(({r,c})=>G.grid[r][c].hint=true);
+  draw(); setTimeout(()=>{clearHints();draw();},2000);
+}
+function findPath(r,c,vis){
+  const t=G.grid[r][c].t; let best=[{r,c}];
+  const dirs=[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+  for(const[dr,dc]of dirs){
+    const nr=r+dr, nc=c+dc;
+    if(nr<0||nr>=ROWS||nc<0||nc>=COLS) continue;
+    if(vis.some(v=>v.r===nr&&v.c===nc)) continue;
+    if(G.grid[nr][nc].t!==t) continue;
+    const sub=findPath(nr,nc,[...vis,{r,c}]);
+    if(sub.length+1>best.length) best=[{r,c},...sub];
+  }
+  return best;
+}
+
+/* ── MENU ORBS ── */
+function buildMenu(){
+  const row=document.getElementById('menu-orbs'); row.innerHTML='';
+  ORB_TYPES.forEach(o=>{
+    const d=document.createElement('div'); d.className='orb-demo';
+    d.style.cssText=`background:radial-gradient(circle at 35% 35%,${o.colors[0]},${o.colors[1]},${o.colors[2]});box-shadow:0 0 16px 4px ${o.glow};`;
+    d.textContent=o.icon; row.appendChild(d);
+  });
+  document.getElementById('best-display').textContent=fmt(G.best);
+}
+
+/* ── SCREEN ── */
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.id===id?s.classList.remove('hidden'):s.classList.add('hidden'));}
+
+window.addEventListener('resize',()=>{if(!document.getElementById('game').classList.contains('hidden')){setupCanvas();draw();}});
+buildMenu(); show('menu');
+</script>
+</body>
+</html>
