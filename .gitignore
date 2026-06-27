@@ -1,2 +1,7 @@
 node_modules/
 html-report/
+game-logic.js
+game-logic.test.js
+package.json
+package-lock.json
+vitest.config.js
