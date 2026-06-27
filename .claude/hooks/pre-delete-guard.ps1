@@ -111,4 +111,6 @@ Write-Host ''
 Write-Host '  [REQUIERE_CONFIRMACION_USUARIO] — Operación en espera.' -ForegroundColor Magenta
 Write-Host '══════════════════════════════════════════════' -ForegroundColor Red
 
+[Console]::Error.WriteLine("BLOQUEADO por delete-guard: $command")
+
 exit 2

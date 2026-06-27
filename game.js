@@ -9,7 +9,7 @@ const ORBS=[
   {id:'gold',  name:'Gold',  cls:'o-gold',  icon:'⭐',col:'#FBBF24',glow:'rgba(245,158,11,.55)'},
 ];
 const RANKS=[
-  {n:'E',exp:0,cls:'re'},{n:'D',exp:500,cls:'rd'},{n:'C',exp:1500,cls:'rc'},
+  {n:'E',exp:0,cls:'re'},{n:'D',exp:400,cls:'rd'},{n:'C',exp:1500,cls:'rc'},
   {n:'B',exp:3500,cls:'rb'},{n:'A',exp:7000,cls:'ra'},{n:'S',exp:15000,cls:'rs'},
 ];
 
