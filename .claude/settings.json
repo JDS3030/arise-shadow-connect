@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \".claude/hooks/post-test.ps1\"",
+            "timeout": 60,
+            "statusMessage": "⚡ Ejecutando tests con Vitest..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \".claude/hooks/pre-delete-guard.ps1\"",
+            "timeout": 10,
+            "statusMessage": "🛡 Verificando seguridad del comando..."
+          }
+        ]
+      }
+    ]
+  }
+}
