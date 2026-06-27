@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ARISE - Shadow Connect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #12121A;
+            --bg-card: #1A1A25;
+            --accent-purple: #8B5CF6;
+            --accent-purple-dark: #6D28D9;
+            --accent-blue: #3B82F6;
+            --accent-cyan: #06B6D4;
+            --glow-purple: #A855F7;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A1A1AA;
+            --text-muted: #71717A;
+            --orb-hunter: #8B5CF6;
+            --orb-shadow: #1E1B4B;
+            --orb-magic: #06B6D4;
+            --orb-power: #EF4444;
+            --orb-gold: #F59E0B;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .screen {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+            max-width: 430px;
+            margin: 0 auto;
+            padding: 12px 20px 24px;
+        }
+        .screen.active { display: flex; }
+
+        /* Ranks */
+        .rank-e { color: #9CA3AF; }
+        .rank-d { color: #3B82F6; }
+        .rank-c { color: #8B5CF6; }
+        .rank-b { color: #F59E0B; }
+        .rank-a { color: #EF4444; }
+        .rank-s { color: #EC4899; text-shadow: 0 0 20px #EC4899; }
+
+        /* Menu */
+        .hero-section { text-align: center; padding: 40px 0 24px; }
+        .arise-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 56px;
+            font-weight: 900;
+            background: linear-gradient(180deg, #A855F7 0%, #6D28D9 50%, #3B82F6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 6px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6)); }
+            to { filter: drop-shadow(0 0 40px rgba(139, 92, 246, 0.9)); }
+        }
+        .subtitle {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            color: var(--text-secondary);
+            letter-spacing: 5px;
+            margin-top: 6px;
+        }
+        .player-rank {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .player-rank-label { font-size: 12px; color: var(--text-muted); }
+        .player-rank-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .player-exp-bar {
+            width: 100px;
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .player-exp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        .mode-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .mode-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            background: linear-gradient(180deg, #1E1B4B 0%, #0F0D24 100%);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15);
+        }
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+        .mode-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+        .mode-text { flex: 1; }
+        .mode-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .mode-rank { font-size: 11px; color: var(--accent-purple); margin-top: 2px; }
+        .mode-arrow {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .bottom-section { margin-top: auto; }
+        .menu-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .menu-btn {
+            flex: 1;
+            padding: 14px;
+            background: var(--bg-card);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .menu-btn:hover { background: var(--bg-secondary); color: var(--accent-purple); }
+        .menu-btn svg { width: 22px; height: 22px; }
+
+        /* Game Screen */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+        .icon-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+        .icon-btn:hover { background: var(--bg-secondary); }
+        .score-display { display: flex; align-items: center; gap: 8px; }
+        .score-display svg { color: var(--orb-gold); }
+        .score-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .level-badge {
+            padding: 6px 12px;
+            background: var(--accent-purple);
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Current Player Indicator */
+        .current-player {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            margin: 12px 0;
+        }
+        .current-player-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .current-player-orb {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            position: relative;
+        }
+        .current-player-orb::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 7px;
+            width: 8px;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+        }
+        .turn-indicator {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .turn-indicator.player1 { color: var(--orb-hunter); }
+        .turn-indicator.player2 { color: var(--orb-power); }
+
+        /* Orb Selector */
+        .orb-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            background: var(--bg-card);
+            border-radius: 14px;
+            margin-bottom: 12px;
+        }
+        .orb-option {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            border: 3px solid transparent;
+        }
+        .orb-option::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 7px;
+            width: 8px;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+        }
+        .orb-option:hover { transform: scale(1.1); }
+        .orb-option.selected {
+            border-color: white;
+            transform: scale(1.15);
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .grid-container { display: flex; justify-content: center; padding: 12px 0; }
+        .grid-background {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .arise-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.03);
+            letter-spacing: 6px;
+            pointer-events: none;
+        }
+        .game-grid { display: grid; gap: 4px; }
+        .cell {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+            background: rgba(255,255,255,0.05);
+            border: 2px dashed rgba(255,255,255,0.1);
+        }
+        .cell:hover:not(.filled) {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+        .cell.filled {
+            border: none;
+            cursor: default;
+        }
+        .cell.filled::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 8px;
+            width: 9px;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+        }
+        .cell.winning {
+            animation: winPulse 0.5s ease infinite alternate;
+        }
+        @keyframes winPulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); box-shadow: 0 0 20px currentColor; }
+        }
+        .cell.last-placed {
+            animation: placed 0.3s ease;
+        }
+        @keyframes placed {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .orb-hunter {
+            background: radial-gradient(circle at 30% 30%, #A855F7, #6D28D9 70%, #4C1D95);
+            box-shadow: 0 0 14px rgba(168, 85, 247, 0.6);
+        }
+        .orb-shadow {
+            background: radial-gradient(circle at 30% 30%, #3730A3, #1E1B4B 70%, #0F0D24);
+            box-shadow: 0 0 10px rgba(67, 56, 202, 0.4);
+        }
+        .orb-magic {
+            background: radial-gradient(circle at 30% 30%, #22D3EE, #0891B2 70%, #164E63);
+            box-shadow: 0 0 14px rgba(6, 182, 212, 0.6);
+        }
+        .orb-power {
+            background: radial-gradient(circle at 30% 30%, #F87171, #DC2626 70%, #7F1D1D);
+            box-shadow: 0 0 14px rgba(239, 68, 68, 0.6);
+        }
+        .orb-gold {
+            background: radial-gradient(circle at 30% 30%, #FBBF24, #D97706 70%, #78350F);
+            box-shadow: 0 0 14px rgba(245, 158, 11, 0.6);
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            padding: 16px 0;
+        }
+        .game-info-item {
+            text-align: center;
+        }
+        .game-info-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .game-info-value.cyan { color: var(--accent-cyan); }
+        .game-info-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            letter-spacing: 1px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(180deg, #6D28D9, #4C1D95);
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+            transition: all 0.2s;
+            margin-top: 12px;
+        }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(139, 92, 246, 0.45); }
+        .action-btn.secondary {
+            background: var(--bg-card);
+            box-shadow: none;
+        }
+
+        /* Game Mode Toggle */
+        .game-mode-toggle {
+            display: flex;
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 4px;
+            margin: 16px 0;
+        }
+        .mode-toggle-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mode-toggle-btn.active {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 28px;
+            text-align: center;
+            max-width: 340px;
+            width: 100%;
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            box-shadow: 0 0 50px rgba(139, 92, 246, 0.25);
+        }
+        .modal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .modal-title.win {
+            background: linear-gradient(180deg, #F59E0B, #D97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .modal-title.lose { color: var(--orb-power); }
+        .modal-title.draw { color: var(--accent-cyan); }
+        .modal-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+        .winner-orb {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 20px auto;
+            position: relative;
+        }
+        .winner-orb::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 18px;
+            width: 18px;
+            height: 10px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+        }
+        .modal-stats {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin: 16px 0;
+            padding: 14px;
+            background: var(--bg-card);
+            border-radius: 10px;
+        }
+        .modal-stat { text-align: center; }
+        .modal-stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+        .modal-stat-label { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
+        .modal-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .modal-btn {
+            padding: 14px;
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        .modal-btn.primary { background: linear-gradient(180deg, #8B5CF6, #6D28D9); color: white; }
+        .modal-btn.secondary { background: var(--bg-card); color: var(--text-secondary); }
+        .modal-btn:hover { transform: translateY(-2px); }
+
+        /* Ranking */
+        .ranking-list { margin: 16px 0; max-height: 320px; overflow-y: auto; }
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        .ranking-pos {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            width: 28px;
+        }
+        .ranking-pos.gold { color: #F59E0B; }
+        .ranking-pos.silver { color: #9CA3AF; }
+        .ranking-pos.bronze { color: #D97706; }
+        .ranking-info { flex: 1; text-align: left; }
+        .ranking-name { font-size: 13px; font-weight: 600; }
+        .ranking-date { font-size: 10px; color: var(--text-muted); }
+        .ranking-score {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+        .empty-ranking {
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Screen -->
+    <div id="menuScreen" class="screen active">
+        <div class="hero-section">
+            <h1 class="arise-title">ARISE</h1>
+            <p class="subtitle">SHADOW CONNECT</p>
+            <div class="player-rank">
+                <div>
+                    <div class="player-rank-label">TU RANGO</div>
+                    <div class="player-rank-value" id="playerRankDisplay">E</div>
+                </div>
+                <div>
+                    <div class="player-rank-label">EXP</div>
+                    <div class="player-exp-bar">
+                        <div class="player-exp-fill" id="playerExpFill" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-mode-toggle">
+            <button class="mode-toggle-btn active" onclick="setGameType('vs')">VS JUGADOR</button>
+            <button class="mode-toggle-btn" onclick="setGameType('ai')">VS SOMBRA (IA)</button>
+        </div>
+
+        <div class="mode-buttons">
+            <div class="mode-btn" onclick="startGame(4)">
+                <div class="mode-icon" style="background: #8B5CF6;">4</div>
+                <div class="mode-text">
+                    <div class="mode-title">CONNECT 4</div>
+                    <div class="mode-rank">Conecta 4 en linea</div>
+                </div>
+                <div class="mode-arrow">&#10095;</div>
+            </div>
+            <div class="mode-btn" onclick="startGame(5)">
+                <div class="mode-icon" style="background: #3B82F6;">5</div>
+                <div class="mode-text">
+                    <div class="mode-title">CONNECT 5</div>
+                    <div class="mode-rank">Conecta 5 en linea</div>
+                </div>
+                <div class="mode-arrow">&#10095;</div>
+            </div>
+            <div class="mode-btn" onclick="startGame(6)">
+                <div class="mode-icon" style="background: #06B6D4;">6</div>
+                <div class="mode-text">
+                    <div class="mode-title">CONNECT 6</div>
+                    <div class="mode-rank">Conecta 6 en linea</div>
+                </div>
+                <div class="mode-arrow">&#10095;</div>
+            </div>
+        </div>
+
+        <div class="bottom-section">
+            <div class="menu-buttons">
+                <button class="menu-btn" onclick="showRanking()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                    </svg>
+                    RANKING
+                </button>
+                <button class="menu-btn" onclick="showInfo()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    INFO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen">
+        <div class="top-bar">
+            <button class="icon-btn" onclick="pauseGame()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                </svg>
+            </button>
+            <div class="score-display">
+                <span class="score-value" id="modeDisplay">CONNECT 4</span>
+            </div>
+            <div class="level-badge" id="turnCount">Turno 1</div>
+        </div>
+
+        <div class="current-player">
+            <span class="current-player-label">TURNO DE:</span>
+            <div class="current-player-orb orb-hunter" id="currentPlayerOrb"></div>
+            <span class="turn-indicator player1" id="turnIndicator">JUGADOR 1</span>
+        </div>
+
+        <div class="grid-container">
+            <div class="grid-background">
+                <div class="arise-watermark">ARISE</div>
+                <div class="game-grid" id="gameGrid"></div>
+            </div>
+        </div>
+
+        <div class="game-info">
+            <div class="game-info-item">
+                <div class="game-info-value" style="color: var(--orb-hunter);" id="p1Score">0</div>
+                <div class="game-info-label">JUGADOR 1</div>
+            </div>
+            <div class="game-info-item">
+                <div class="game-info-value" style="color: var(--text-muted);" id="draws">0</div>
+                <div class="game-info-label">EMPATES</div>
+            </div>
+            <div class="game-info-item">
+                <div class="game-info-value" style="color: var(--orb-power);" id="p2Score">0</div>
+                <div class="game-info-label" id="p2Label">JUGADOR 2</div>
+            </div>
+        </div>
+
+        <button class="action-btn" onclick="restartGame()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+            </svg>
+            NUEVA PARTIDA
+        </button>
+        <button class="action-btn secondary" onclick="goToMenu()">
+            VOLVER AL MENU
+        </button>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="modal-overlay" id="gameOverModal">
+        <div class="modal">
+            <h2 class="modal-title" id="modalTitle">VICTORIA</h2>
+            <p class="modal-subtitle" id="modalSubtitle">Jugador 1 gana!</p>
+            <div class="winner-orb orb-hunter" id="winnerOrb"></div>
+            <div class="modal-stats">
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="modalTurns">12</div>
+                    <div class="modal-stat-label">TURNOS</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="modalExp">+50</div>
+                    <div class="modal-stat-label">EXP</div>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" onclick="restartGame(); closeModal();">JUGAR DE NUEVO</button>
+                <button class="modal-btn secondary" onclick="goToMenu()">MENU PRINCIPAL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pause Modal -->
+    <div class="modal-overlay" id="pauseModal">
+        <div class="modal">
+            <h2 class="modal-title">PAUSADO</h2>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" onclick="resumeGame()">CONTINUAR</button>
+                <button class="modal-btn secondary" onclick="goToMenu()">SALIR AL MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ranking Modal -->
+    <div class="modal-overlay" id="rankingModal">
+        <div class="modal">
+            <h2 class="modal-title">&#127942; TOP 10 &#127942;</h2>
+            <div class="ranking-list" id="rankingList"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeRanking()">CERRAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal-overlay" id="infoModal">
+        <div class="modal">
+            <h2 class="modal-title">SHADOW CONNECT</h2>
+            <p class="modal-subtitle">Inspirado en Solo Leveling</p>
+            <div style="text-align: left; padding: 16px; background: var(--bg-card); border-radius: 10px; margin: 16px 0;">
+                <p style="font-size: 12px; margin-bottom: 10px;"><strong>Como jugar:</strong></p>
+                <p style="font-size: 11px; color: var(--text-secondary); line-height: 1.6;">
+                    1. Haz clic en una celda vacia para colocar tu orbe<br>
+                    2. Conecta 4, 5 o 6 orbes en linea (segun el modo)<br>
+                    3. Puedes conectar horizontal, vertical o diagonal<br>
+                    4. El primero en conectar gana!<br>
+                    5. Juega contra otro jugador o contra la IA
+                </p>
+                <p style="font-size: 12px; margin: 12px 0 6px;"><strong>Sistema de Rangos:</strong></p>
+                <p style="font-size: 11px; color: var(--text-secondary);">
+                    <span class="rank-e">E</span> &#8594;
+                    <span class="rank-d">D</span> &#8594;
+                    <span class="rank-c">C</span> &#8594;
+                    <span class="rank-b">B</span> &#8594;
+                    <span class="rank-a">A</span> &#8594;
+                    <span class="rank-s">S</span>
+                </p>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeInfo()">CERRAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ranks System
+        const RANKS = [
+            { name: 'E', expRequired: 0, color: 'rank-e' },
+            { name: 'D', expRequired: 500, color: 'rank-d' },
+            { name: 'C', expRequired: 1500, color: 'rank-c' },
+            { name: 'B', expRequired: 3500, color: 'rank-b' },
+            { name: 'A', expRequired: 7000, color: 'rank-a' },
+            { name: 'S', expRequired: 15000, color: 'rank-s' }
+        ];
+
+        // Game State
+        let game = {
+            gridSize: 8,
+            connectRequired: 4,
+            grid: [],
+            currentPlayer: 1, // 1 = Hunter (purple), 2 = Power (red)
+            turnCount: 0,
+            isGameOver: false,
+            isPaused: false,
+            vsAI: false,
+            scores: { p1: 0, p2: 0, draws: 0 },
+            winningCells: []
+        };
+
+        // Player Data
+        let player = {
+            exp: parseInt(localStorage.getItem('shadowConnectExp') || '0'),
+            ranking: JSON.parse(localStorage.getItem('shadowConnectRanking') || '[]')
+        };
+
+        let gameType = 'vs';
+
+        // Initialize
+        updatePlayerDisplay();
+
+        function getPlayerRank() {
+            let rank = RANKS[0];
+            for (let i = RANKS.length - 1; i >= 0; i--) {
+                if (player.exp >= RANKS[i].expRequired) {
+                    rank = RANKS[i];
+                    break;
+                }
+            }
+            return rank;
+        }
+
+        function getPlayerRankIndex() {
+            for (let i = RANKS.length - 1; i >= 0; i--) {
+                if (player.exp >= RANKS[i].expRequired) return i;
+            }
+            return 0;
+        }
+
+        function updatePlayerDisplay() {
+            const rank = getPlayerRank();
+            const rankIndex = getPlayerRankIndex();
+            const display = document.getElementById('playerRankDisplay');
+            display.textContent = rank.name;
+            display.className = `player-rank-value ${rank.color}`;
+
+            let progress = 100;
+            if (rankIndex < RANKS.length - 1) {
+                const currentExp = player.exp - rank.expRequired;
+                const neededExp = RANKS[rankIndex + 1].expRequired - rank.expRequired;
+                progress = (currentExp / neededExp) * 100;
+            }
+            document.getElementById('playerExpFill').style.width = `${progress}%`;
+        }
+
+        function setGameType(type) {
+            gameType = type;
+            document.querySelectorAll('.mode-toggle-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function startGame(connectRequired) {
+            game.connectRequired = connectRequired;
+            game.gridSize = connectRequired + 4; // 8 for connect4, 9 for connect5, 10 for connect6
+            game.currentPlayer = 1;
+            game.turnCount = 0;
+            game.isGameOver = false;
+            game.isPaused = false;
+            game.vsAI = gameType === 'ai';
+            game.winningCells = [];
+            game.grid = [];
+
+            // Initialize empty grid
+            for (let row = 0; row < game.gridSize; row++) {
+                game.grid[row] = [];
+                for (let col = 0; col < game.gridSize; col++) {
+                    game.grid[row][col] = 0; // 0 = empty, 1 = player1, 2 = player2
+                }
+            }
+
+            document.getElementById('menuScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+
+            document.getElementById('modeDisplay').textContent = `CONNECT ${connectRequired}`;
+            document.getElementById('p2Label').textContent = game.vsAI ? 'SOMBRA IA' : 'JUGADOR 2';
+
+            initGrid();
+            updateUI();
+        }
+
+        function initGrid() {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = '';
+
+            // Adjust cell size based on grid size
+            const cellSize = game.gridSize <= 8 ? 44 : game.gridSize <= 9 ? 40 : 36;
+            grid.style.gridTemplateColumns = `repeat(${game.gridSize}, ${cellSize}px)`;
+
+            for (let row = 0; row < game.gridSize; row++) {
+                for (let col = 0; col < game.gridSize; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.style.width = `${cellSize}px`;
+                    cell.style.height = `${cellSize}px`;
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    cell.addEventListener('click', () => handleCellClick(row, col));
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function handleCellClick(row, col) {
+            if (game.isGameOver || game.isPaused) return;
+            if (game.grid[row][col] !== 0) return; // Cell already filled
+            if (game.vsAI && game.currentPlayer === 2) return; // Wait for AI
+
+            placeOrb(row, col);
+        }
+
+        function placeOrb(row, col) {
+            game.grid[row][col] = game.currentPlayer;
+            game.turnCount++;
+
+            // Update cell visually
+            const grid = document.getElementById('gameGrid');
+            const cellIndex = row * game.gridSize + col;
+            const cell = grid.children[cellIndex];
+            cell.classList.add('filled', 'last-placed');
+            cell.classList.add(game.currentPlayer === 1 ? 'orb-hunter' : 'orb-power');
+
+            // Remove last-placed from other cells
+            setTimeout(() => {
+                document.querySelectorAll('.last-placed').forEach(c => {
+                    if (c !== cell) c.classList.remove('last-placed');
+                });
+            }, 300);
+
+            playTone(300 + game.currentPlayer * 100, 0.1);
+
+            // Check for win
+            const winner = checkWin(row, col);
+            if (winner) {
+                endGame(winner);
+                return;
+            }
+
+            // Check for draw
+            if (game.turnCount >= game.gridSize * game.gridSize) {
+                endGame(0); // Draw
+                return;
+            }
+
+            // Switch player
+            game.currentPlayer = game.currentPlayer === 1 ? 2 : 1;
+            updateUI();
+
+            // AI move
+            if (game.vsAI && game.currentPlayer === 2 && !game.isGameOver) {
+                setTimeout(makeAIMove, 500);
+            }
+        }
+
+        function checkWin(row, col) {
+            const player = game.grid[row][col];
+            const directions = [
+                [[0, 1], [0, -1]],   // Horizontal
+                [[1, 0], [-1, 0]],   // Vertical
+                [[1, 1], [-1, -1]], // Diagonal \
+                [[1, -1], [-1, 1]]  // Diagonal /
+            ];
+
+            for (const [dir1, dir2] of directions) {
+                let count = 1;
+                let cells = [[row, col]];
+
+                // Count in first direction
+                let r = row + dir1[0];
+                let c = col + dir1[1];
+                while (r >= 0 && r < game.gridSize && c >= 0 && c < game.gridSize && game.grid[r][c] === player) {
+                    count++;
+                    cells.push([r, c]);
+                    r += dir1[0];
+                    c += dir1[1];
+                }
+
+                // Count in opposite direction
+                r = row + dir2[0];
+                c = col + dir2[1];
+                while (r >= 0 && r < game.gridSize && c >= 0 && c < game.gridSize && game.grid[r][c] === player) {
+                    count++;
+                    cells.push([r, c]);
+                    r += dir2[0];
+                    c += dir2[1];
+                }
+
+                if (count >= game.connectRequired) {
+                    game.winningCells = cells;
+                    return player;
+                }
+            }
+
+            return null;
+        }
+
+        function makeAIMove() {
+            if (game.isGameOver) return;
+
+            // Simple AI: Try to win, then block, then random
+            let bestMove = null;
+
+            // Try to win
+            bestMove = findWinningMove(2);
+            if (bestMove) {
+                placeOrb(bestMove.row, bestMove.col);
+                return;
+            }
+
+            // Block player
+            bestMove = findWinningMove(1);
+            if (bestMove) {
+                placeOrb(bestMove.row, bestMove.col);
+                return;
+            }
+
+            // Find best strategic move
+            bestMove = findStrategicMove();
+            if (bestMove) {
+                placeOrb(bestMove.row, bestMove.col);
+                return;
+            }
+
+            // Random move
+            const emptyCells = [];
+            for (let r = 0; r < game.gridSize; r++) {
+                for (let c = 0; c < game.gridSize; c++) {
+                    if (game.grid[r][c] === 0) emptyCells.push({ row: r, col: c });
+                }
+            }
+            if (emptyCells.length > 0) {
+                const move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                placeOrb(move.row, move.col);
+            }
+        }
+
+        function findWinningMove(player) {
+            for (let r = 0; r < game.gridSize; r++) {
+                for (let c = 0; c < game.gridSize; c++) {
+                    if (game.grid[r][c] === 0) {
+                        game.grid[r][c] = player;
+                        if (checkWin(r, c) === player) {
+                            game.grid[r][c] = 0;
+                            return { row: r, col: c };
+                        }
+                        game.grid[r][c] = 0;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function findStrategicMove() {
+            // Prefer center and adjacent to existing pieces
+            const center = Math.floor(game.gridSize / 2);
+            const moves = [];
+
+            for (let r = 0; r < game.gridSize; r++) {
+                for (let c = 0; c < game.gridSize; c++) {
+                    if (game.grid[r][c] === 0) {
+                        let score = 0;
+                        // Distance from center
+                        score -= Math.abs(r - center) + Math.abs(c - center);
+                        // Adjacent to own pieces
+                        for (let dr = -1; dr <= 1; dr++) {
+                            for (let dc = -1; dc <= 1; dc++) {
+                                const nr = r + dr, nc = c + dc;
+                                if (nr >= 0 && nr < game.gridSize && nc >= 0 && nc < game.gridSize) {
+                                    if (game.grid[nr][nc] === 2) score += 3;
+                                    if (game.grid[nr][nc] === 1) score += 1;
+                                }
+                            }
+                        }
+                        moves.push({ row: r, col: c, score });
+                    }
+                }
+            }
+
+            moves.sort((a, b) => b.score - a.score);
+            return moves.length > 0 ? moves[0] : null;
+        }
+
+        function endGame(winner) {
+            game.isGameOver = true;
+
+            // Highlight winning cells
+            if (winner !== 0) {
+                const grid = document.getElementById('gameGrid');
+                game.winningCells.forEach(([r, c]) => {
+                    const cellIndex = r * game.gridSize + c;
+                    grid.children[cellIndex].classList.add('winning');
+                });
+            }
+
+            // Update scores
+            if (winner === 1) {
+                game.scores.p1++;
+            } else if (winner === 2) {
+                game.scores.p2++;
+            } else {
+                game.scores.draws++;
+            }
+
+            // Calculate EXP
+            let expGained = 0;
+            if (winner === 1) {
+                expGained = 50 + (game.connectRequired - 4) * 25;
+                if (game.vsAI) expGained *= 2;
+            } else if (winner === 0) {
+                expGained = 20;
+            }
+
+            player.exp += expGained;
+            localStorage.setItem('shadowConnectExp', player.exp.toString());
+
+            // Save to ranking if player won
+            if (winner === 1) {
+                saveToRanking(game.turnCount);
+            }
+
+            // Show modal
+            setTimeout(() => {
+                const modal = document.getElementById('gameOverModal');
+                const title = document.getElementById('modalTitle');
+                const subtitle = document.getElementById('modalSubtitle');
+                const winnerOrb = document.getElementById('winnerOrb');
+
+                if (winner === 1) {
+                    title.textContent = 'VICTORIA!';
+                    title.className = 'modal-title win';
+                    subtitle.textContent = 'Jugador 1 gana!';
+                    winnerOrb.className = 'winner-orb orb-hunter';
+                    winnerOrb.style.display = 'block';
+                    playTone(600, 0.2);
+                    setTimeout(() => playTone(800, 0.2), 150);
+                } else if (winner === 2) {
+                    title.textContent = game.vsAI ? 'DERROTA' : 'VICTORIA!';
+                    title.className = game.vsAI ? 'modal-title lose' : 'modal-title win';
+                    subtitle.textContent = game.vsAI ? 'La Sombra gana...' : 'Jugador 2 gana!';
+                    winnerOrb.className = 'winner-orb orb-power';
+                    winnerOrb.style.display = 'block';
+                } else {
+                    title.textContent = 'EMPATE';
+                    title.className = 'modal-title draw';
+                    subtitle.textContent = 'Nadie gana esta ronda';
+                    winnerOrb.style.display = 'none';
+                }
+
+                document.getElementById('modalTurns').textContent = game.turnCount;
+                document.getElementById('modalExp').textContent = `+${expGained}`;
+
+                modal.classList.add('active');
+                updatePlayerDisplay();
+                updateUI();
+            }, 800);
+        }
+
+        function saveToRanking(turns) {
+            const entry = {
+                score: 1000 - turns * 10 + (game.connectRequired - 4) * 100,
+                turns: turns,
+                mode: `Connect ${game.connectRequired}`,
+                vsAI: game.vsAI,
+                date: new Date().toLocaleDateString('es-ES')
+            };
+            player.ranking.push(entry);
+            player.ranking.sort((a, b) => b.score - a.score);
+            player.ranking = player.ranking.slice(0, 10);
+            localStorage.setItem('shadowConnectRanking', JSON.stringify(player.ranking));
+        }
+
+        function updateUI() {
+            document.getElementById('turnCount').textContent = `Turno ${game.turnCount + 1}`;
+            document.getElementById('p1Score').textContent = game.scores.p1;
+            document.getElementById('p2Score').textContent = game.scores.p2;
+            document.getElementById('draws').textContent = game.scores.draws;
+
+            const orbEl = document.getElementById('currentPlayerOrb');
+            const turnEl = document.getElementById('turnIndicator');
+
+            if (game.currentPlayer === 1) {
+                orbEl.className = 'current-player-orb orb-hunter';
+                turnEl.textContent = 'JUGADOR 1';
+                turnEl.className = 'turn-indicator player1';
+            } else {
+                orbEl.className = 'current-player-orb orb-power';
+                turnEl.textContent = game.vsAI ? 'SOMBRA IA' : 'JUGADOR 2';
+                turnEl.className = 'turn-indicator player2';
+            }
+        }
+
+        function restartGame() {
+            game.currentPlayer = 1;
+            game.turnCount = 0;
+            game.isGameOver = false;
+            game.winningCells = [];
+
+            for (let row = 0; row < game.gridSize; row++) {
+                for (let col = 0; col < game.gridSize; col++) {
+                    game.grid[row][col] = 0;
+                }
+            }
+
+            initGrid();
+            updateUI();
+        }
+
+        function closeModal() {
+            document.getElementById('gameOverModal').classList.remove('active');
+        }
+
+        function pauseGame() {
+            game.isPaused = true;
+            document.getElementById('pauseModal').classList.add('active');
+        }
+
+        function resumeGame() {
+            game.isPaused = false;
+            document.getElementById('pauseModal').classList.remove('active');
+        }
+
+        function goToMenu() {
+            game.scores = { p1: 0, p2: 0, draws: 0 };
+            document.getElementById('gameOverModal').classList.remove('active');
+            document.getElementById('pauseModal').classList.remove('active');
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('menuScreen').classList.add('active');
+            updatePlayerDisplay();
+        }
+
+        function showRanking() {
+            const list = document.getElementById('rankingList');
+            if (player.ranking.length === 0) {
+                list.innerHTML = '<div class="empty-ranking">No hay puntuaciones aun.<br>Gana partidas para entrar al ranking!</div>';
+            } else {
+                list.innerHTML = player.ranking.map((entry, i) => {
+                    const posClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+                    return `
+                        <div class="ranking-item">
+                            <div class="ranking-pos ${posClass}">#${i + 1}</div>
+                            <div class="ranking-info">
+                                <div class="ranking-name">${entry.mode} ${entry.vsAI ? '(vs IA)' : ''}</div>
+                                <div class="ranking-date">${entry.date} - ${entry.turns} turnos</div>
+                            </div>
+                            <div class="ranking-score">${entry.score}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            document.getElementById('rankingModal').classList.add('active');
+        }
+
+        function closeRanking() {
+            document.getElementById('rankingModal').classList.remove('active');
+        }
+
+        function showInfo() {
+            document.getElementById('infoModal').classList.add('active');
+        }
+
+        function closeInfo() {
+            document.getElementById('infoModal').classList.remove('active');
+        }
+
+        // Audio
+        let audioCtx;
+        function playTone(freq, duration) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = freq;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+    </script>
+</body>
+</html>
