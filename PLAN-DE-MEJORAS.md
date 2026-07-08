@@ -29,6 +29,12 @@
 
 **Criterio de aceptación:** el juego funciona igual que ahora, pero ya no hay código duplicado y `npm test` prueba las funciones reales.
 
+> ✅ **Completada (2026-07-08).** `game-logic.js` es ahora la fuente única de la
+> lógica pura; `game.js` la importa como módulo ES y expone los handlers a `window`.
+> `game-logic.js` se versiona y despliega (se quitó de `.gitignore`/`.vercelignore`).
+> 44 tests pasan sobre el código real + smoke-test end-to-end con jsdom + deploy
+> verificado en Vercel. **Nota:** el dev local ahora requiere servidor HTTP (no `file://`).
+
 ---
 
 ## FASE 2 — Robustez y datos 🟡
@@ -110,7 +116,7 @@ FASE 1 (base sana)  →  FASE 2 (robustez)  →  FASE 3 (móvil/web)  →  FASE 
 
 | Fase | Estado | Fecha | Notas |
 |---|---|---|---|
-| 1 | ⬜ Pendiente | — | |
+| 1 | ✅ Completada | 2026-07-08 | Fuente única en `game-logic.js`; 44 tests + smoke-test + deploy OK |
 | 2 | ⬜ Pendiente | — | |
 | 3 | ⬜ Pendiente | — | |
 | 4 | ⬜ Pendiente | — | |

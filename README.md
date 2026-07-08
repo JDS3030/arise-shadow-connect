@@ -32,23 +32,20 @@
 
 ## 🚀 Ejecutar en local
 
-No requiere instalación para jugar. Solo abre el archivo principal:
+`game.js` es un **módulo ES**, por lo que la app **necesita servirse por HTTP**
+(abrir el archivo con doble clic / `file://` no funciona: el navegador bloquea los
+módulos por CORS). Opciones:
 
-```
-arise-shadow-connect-v2.html
-```
-
-Opciones:
-
-- **Doble clic** en el archivo, o
-- Con **Live Server** (VS Code) para recarga automática, o
-- Con cualquier servidor estático simple:
+- **Live Server** (extensión de VS Code) — clic derecho sobre el HTML → *Open with Live Server*, o
+- Cualquier servidor estático simple:
 
 ```bash
 # Python
 python -m http.server 8000
 # luego abre http://localhost:8000/arise-shadow-connect-v2.html
 ```
+
+- O simplemente usa la **versión desplegada**: [arise-shadow-connect.vercel.app](https://arise-shadow-connect.vercel.app)
 
 Para depurar: `F12` → pestaña **Consola**.
 
@@ -73,8 +70,8 @@ npm run test:ui      # interfaz visual de Vitest
 .
 ├── arise-shadow-connect-v2.html   # ← archivo principal (en desarrollo)
 ├── styles.css                     # estilos (orbes, animaciones, pantallas)
-├── game.js                        # lógica + renderizado del juego
-├── game-logic.js                  # lógica pura (para tests)
+├── game-logic.js                  # ← fuente única de lógica pura y estado (importada por game.js y por los tests)
+├── game.js                        # capa de navegador: renderizado, eventos y audio (módulo ES)
 ├── game-logic.test.js             # tests con Vitest
 ├── vercel.json                    # config de despliegue (redirige / al HTML)
 ├── .vercelignore                  # archivos excluidos del deploy
