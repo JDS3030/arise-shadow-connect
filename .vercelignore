@@ -1,0 +1,9 @@
+node_modules/
+html-report/
+.claude/
+*.pen
+*.test.js
+game-logic.js
+vitest.config.js
+package.json
+package-lock.json
