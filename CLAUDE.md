@@ -6,12 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **HTML5 / CSS3 / JavaScript Vanilla ES6+** — sin frameworks, sin bundlers, sin dependencias npm.
 - Ejecución: abrir `arise-shadow-connect-v2.html` en el navegador o con Live Server. Depuración: F12 → Consola.
-- Fuente externa única: Google Fonts (Orbitron + Inter) vía CDN en `<head>` L7. Sin tests automatizados.
+- Fuente externa única: Google Fonts (Orbitron + Inter) vía CDN en `<head>` L7. Tests con Vitest (`npm test`) sobre la lógica pura en `game-logic.js`.
 
 ## Archivo principal
 
-`arise-shadow-connect-v2.html` es el archivo activo en desarrollo.
-Los otros dos (`shadow-connect.html`, `arise-shadow-connect.html`) son versiones anteriores de referencia — no se modifican.
+`arise-shadow-connect-v2.html` es el archivo activo en desarrollo y el único HTML del proyecto.
 
 ## Arquitectura (un solo archivo, tres bloques)
 
