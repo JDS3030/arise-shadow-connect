@@ -73,9 +73,10 @@ function openOrbSelect(n){
   G.pendingConnect=n;
   document.getElementById('orbSelectTitle').textContent='CONNECT '+n;
   document.getElementById('p1OrbLabel').textContent=gameType==='ai'?'TU ORBE':'JUGADOR 1';
-  document.getElementById('p2OrbLabel').textContent=gameType==='ai'?'ORBE IA (automático)':'JUGADOR 2';
-  document.getElementById('p2OrbSection').style.opacity=gameType==='ai'?.4:1;
-  document.getElementById('p2OrbSection').style.pointerEvents=gameType==='ai'?'none':'auto';
+  document.getElementById('p2OrbLabel').textContent=gameType==='ai'?'ORBE DE LA SOMBRA IA':'JUGADOR 2';
+  // El orbe de la IA ahora también lo elige el jugador (color + habilidad).
+  document.getElementById('p2OrbSection').style.opacity=1;
+  document.getElementById('p2OrbSection').style.pointerEvents='auto';
 
   buildOrbRow('p1Orbs',G.p1Orb,1,id=>{G.p1Orb=id;});
   buildOrbRow('p2Orbs',G.p2Orb,2,id=>{G.p2Orb=id;});
@@ -83,10 +84,7 @@ function openOrbSelect(n){
 }
 
 function startGameFromSelect(){
-  if(gameType==='ai'){
-    const others=ORBS.filter(o=>o.id!==G.p1Orb);
-    G.p2Orb=others[Math.floor(Math.random()*others.length)].id;
-  }
+  // El orbe de la IA (G.p2Orb) es el que el jugador seleccionó en el modal.
   closeModal('orbSelectModal');
   startGame(G.pendingConnect);
 }

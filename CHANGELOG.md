@@ -13,6 +13,20 @@ y el proyecto usa [Versionado Semántico](https://semver.org/lang/es/) (`MAJOR.M
 
 ---
 
+## [1.2.0] — 2026-07-09
+
+### Added
+- **Elección del orbe de la Sombra IA**: al jugar contra la IA, ahora el
+  jugador elige el orbe del rival (su color y su habilidad) en el selector,
+  en vez de asignarse al azar. El selector de orbe del jugador 2 queda
+  habilitado en modo IA con la etiqueta "ORBE DE LA SOMBRA IA".
+
+### Changed
+- `startGameFromSelect()` ya no asigna un orbe aleatorio a la IA; usa el
+  seleccionado (`G.p2Orb`).
+
+---
+
 ## [1.1.0] — 2026-07-09 · Shadow Abilities
 
 ### Added
