@@ -192,6 +192,17 @@ html,body{width:100%;height:100%;background:#000;display:flex;justify-content:ce
 .cell.targetable{cursor:pointer;box-shadow:0 0 0 2px var(--cyan) inset,0 0 12px rgba(6,182,212,.45);animation:tgt-pulse 1s ease infinite alternate;}
 @keyframes tgt-pulse{from{box-shadow:0 0 0 2px var(--cyan) inset,0 0 8px rgba(6,182,212,.35);}to{box-shadow:0 0 0 3px var(--cyan) inset,0 0 18px rgba(6,182,212,.7);}}
 
+/* tono de la IA cuando comparte orbe con el jugador (distinguible) */
+.o-shade-dark{filter:brightness(.55) saturate(1.2);}
+.o-shade-light{filter:brightness(1.5) saturate(.85);}
+
+/* selector de tono de la IA (en el modal de orbes) */
+.ai-shade{margin-top:14px;}
+.shade-toggle{display:flex;justify-content:center;gap:8px;}
+.shade-btn{padding:9px 14px;border:2px solid rgba(255,255,255,.15);border-radius:10px;background:var(--card);color:var(--t2);font-family:'Orbitron',sans-serif;font-size:10px;cursor:pointer;transition:all .2s;}
+.shade-btn:hover{color:var(--t1);transform:translateY(-1px);}
+.shade-btn.active{border-color:var(--purple);background:var(--pdeep);color:#fff;}
+
 /* muro dorado (celda bloqueada) */
 .cell.wall{border:2px solid var(--gold);background:repeating-linear-gradient(45deg,#78350F,#78350F 5px,#B45309 5px,#B45309 10px);box-shadow:0 0 10px rgba(245,158,11,.45) inset;cursor:not-allowed;}
 .cell.wall::after{content:'🔒';position:absolute;inset:0;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:15px;background:none;border-radius:0;transform:none;}

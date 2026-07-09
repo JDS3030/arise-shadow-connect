@@ -16,6 +16,10 @@ let pendingAbility = null;   // {player, orbId, ab} mientras se elige objetivo
 let teleportFrom = null;     // 1er paso del Teletransporte
 let extraPlacements = 0;     // fichas extra pendientes (Doble Jugada)
 let currentHint = '';        // texto guía durante el modo objetivo
+let aiShade = null;          // 'dark' | 'light' | null — tono de la IA si comparte orbe con el jugador
+
+// Clase de tono para el jugador 2 cuando la IA comparte orbe (color distinguible).
+function shadeClass(player){ return (player === 2 && aiShade) ? ' o-shade-' + aiShade : ''; }
 
 // ── Cargar progreso persistido (localStorage) ─────────
 P.exp = +localStorage.getItem('sc_exp') || 0;
@@ -54,11 +58,24 @@ function buildOrbRow(containerId,selectedId,player,onSelect){
       d.classList.add('selected');
       onSelect(o.id);
       showOrbAbility(containerId,o.id);
+      updateShadeSelector();
       playTone(400+ORBS.indexOf(o)*30,.08);
     };
     container.appendChild(d);
   });
   showOrbAbility(containerId,selectedId);
+}
+
+// Muestra el selector de tono solo cuando, en modo IA, el jugador elige para
+// la IA el mismo orbe que el suyo (para que las fichas sean distinguibles).
+function updateShadeSelector(){
+  const box=document.getElementById('aiShade');
+  if(!box) return;
+  const applies = gameType==='ai' && G.p1Orb===G.p2Orb;
+  if(!applies){ box.style.display='none'; aiShade=null; return; }
+  box.style.display='block';
+  if(!aiShade) aiShade='dark'; // por defecto, la IA se ve más oscura
+  box.querySelectorAll('.shade-btn').forEach(b=>b.classList.toggle('active', b.dataset.shade===aiShade));
 }
 
 // Muestra bajo cada fila de orbes la habilidad del orbe seleccionado.
@@ -80,6 +97,7 @@ function openOrbSelect(n){
 
   buildOrbRow('p1Orbs',G.p1Orb,1,id=>{G.p1Orb=id;});
   buildOrbRow('p2Orbs',G.p2Orb,2,id=>{G.p2Orb=id;});
+  updateShadeSelector();
   openModal('orbSelectModal');
 }
 
@@ -111,10 +129,16 @@ function startGame(n){
   document.getElementById('modeLabel').textContent='CONNECT '+n;
   document.getElementById('p2Lbl').textContent=G.vsAI?'SOMBRA IA':'JUGADOR 2';
 
+  // El tono de la IA solo aplica en modo IA cuando ambos comparten orbe.
+  if(!(G.vsAI && G.p1Orb===G.p2Orb)) aiShade=null;
+
   const p1c=ORBS.find(o=>o.id===G.p1Orb).col;
   const p2c=ORBS.find(o=>o.id===G.p2Orb).col;
   document.getElementById('s1').style.color=p1c;
-  document.getElementById('s2').style.color=p2c;
+  const s2El=document.getElementById('s2');
+  s2El.style.color=p2c;
+  s2El.classList.remove('o-shade-dark','o-shade-light');
+  if(aiShade) s2El.classList.add('o-shade-'+aiShade);
 
   buildGrid(); updateUI(); renderAbilityBar();
 }
@@ -165,6 +189,7 @@ function placeOrb(r,c,keepTurn=false){
   const cell=cellEl(r,c);
   cell.className='cell'; cell.style.width=cell.style.height=cellSize()+'px';
   cell.classList.add('filled','placed',orb.cls);
+  if(G.currentPlayer===2&&aiShade) cell.classList.add('o-shade-'+aiShade);
   setTimeout(()=>cell.classList.remove('placed'),300);
   playTone(280+G.currentPlayer*80,.09);
 
@@ -196,6 +221,7 @@ function renderCellDOM(r,c){
   if(v===1||v===2){
     const orbId=v===1?G.p1Orb:G.p2Orb;
     el.classList.add('filled',ORBS.find(o=>o.id===orbId).cls);
+    if(v===2&&aiShade) el.classList.add('o-shade-'+aiShade);
   }else if(v===3){
     el.classList.add('wall');
   }
@@ -232,7 +258,7 @@ function renderAbilityBar(){
   const orbCls=ORBS.find(o=>o.id===orbId).cls;
 
   const btn=document.createElement('button');
-  btn.className='ability-btn '+orbCls+(used?' used':'');
+  btn.className='ability-btn '+orbCls+shadeClass(player)+(used?' used':'');
   btn.innerHTML=`<span class="ab-ico">${ab.icon}</span>`+
     `<span class="ab-txt"><b>${ab.name}</b><small>${used?'Usada':(isHumanTurn?ab.desc:'Turno IA')}</small></span>`;
   btn.disabled=used||!isHumanTurn||extraPlacements>0;
@@ -397,7 +423,7 @@ function endGame(winner){
     const wo=document.getElementById('goOrb');
     if(winner){
       const orb=ORBS.find(o=>o.id===(winner===1?G.p1Orb:G.p2Orb));
-      wo.className='winner-orb '+orb.cls; wo.style.display='block';
+      wo.className='winner-orb '+orb.cls+shadeClass(winner); wo.style.display='block';
       playTone(550,.15); setTimeout(()=>playTone(750,.15),160);
     } else wo.style.display='none';
     document.getElementById('goTurns').textContent=G.turn;
@@ -425,7 +451,7 @@ function updateUI(){
   document.getElementById('sDraw').textContent=G.scores.draw;
 
   const orb=ORBS.find(o=>o.id===(G.currentPlayer===1?G.p1Orb:G.p2Orb));
-  document.getElementById('cpOrb').className='cp-orb '+orb.cls;
+  document.getElementById('cpOrb').className='cp-orb '+orb.cls+shadeClass(G.currentPlayer);
   const cpn=document.getElementById('cpName');
   cpn.textContent=G.currentPlayer===1?'JUGADOR 1':(G.vsAI?'SOMBRA IA':'JUGADOR 2');
   cpn.style.color=orb.col;
@@ -497,4 +523,7 @@ Object.assign(window, {
 // ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
+document.querySelectorAll('#aiShade .shade-btn').forEach(b=>{
+  b.onclick=()=>{ aiShade=b.dataset.shade; updateShadeSelector(); playTone(360,.08); };
+});
 updatePlayerUI();

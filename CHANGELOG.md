@@ -13,6 +13,21 @@ y el proyecto usa [Versionado Semántico](https://semver.org/lang/es/) (`MAJOR.M
 
 ---
 
+## [1.3.0] — 2026-07-09
+
+### Added
+- **Tono de la IA cuando comparte orbe**: si en modo IA el jugador elige para
+  la IA el mismo orbe que el suyo, aparece un selector para que la IA se vea
+  **más oscura** o **más clara** (a elección del jugador), de modo que las
+  fichas sigan siendo distinguibles. Se aplica a fichas, indicador de turno,
+  orbe ganador, botón de habilidad y marcador del rival.
+
+### Notes
+- Implementado con clases CSS `o-shade-dark` / `o-shade-light` (filtro de
+  brillo) sobre los elementos del jugador 2; estado `aiShade` en `game.js`.
+
+---
+
 ## [1.2.0] — 2026-07-09
 
 ### Added
