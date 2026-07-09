@@ -60,6 +60,7 @@
 | 3.1 | **PWA instalable**: `manifest.json` + service worker → "Agregar a pantalla de inicio", ícono propio, pantalla completa, funciona **sin internet**. | 🟢 | ⏱️⏱️ | Bajo |
 | 3.2 | **Meta tags + favicon**: `theme-color`, Open Graph (imagen + descripción al compartir por WhatsApp/redes), favicon. | 🟢 | ⏱️ | Bajo |
 | 3.3 | **Soporte táctil**: la pista de columna usa `mouseenter`, que no existe en pantallas táctiles. Agregar eventos touch. | 🟢 | ⏱️⏱️ | Medio |
+| 3.4 | **i18n completa (EN/ES) en toda la app**: extender la traducción al menú, la partida, los modales y el tutorial. La base ya existe (diccionario `I18N` + atributos `data-i18n` + `applyLang()` en `game.js`, entregada en v1.5.0 para la pantalla de entrada). ⏸️ **Diferida a futuras versiones — solo implementar cuando se solicite.** | 🟢 | ⏱️⏱️ | Bajo |
 
 **Criterio de aceptación:** se puede instalar en el celular, funciona offline, y el enlace compartido muestra imagen + título.
 
@@ -141,3 +142,19 @@ antes era solo cosmética). La IA también usa su habilidad.
 
 > Se relaciona con la Fase 4 (jugabilidad/IA): la heurística de habilidad de la
 > IA es defensiva y simple; una IA más profunda (amenazas dobles) sigue en 4.2.
+
+---
+
+## Feature fuera de fase — Pantalla de entrada + i18n (v1.5.0) ✅
+
+*Entregada 2026-07-09. Ver `CHANGELOG.md`.*
+
+Nueva pantalla de entrada estilo *Solo Leveling* (`#entranceScreen`) con portal
+animado, título ARISE con glow, ventana de notificación del Sistema y botón que
+lleva al menú. **Base de internacionalización EN/ES**: idioma por preferencia
+guardada o del navegador, persistido en `localStorage`, con selector visible.
+Diseño de referencia en `solo-leveling.pen`.
+
+> **Pendiente para futuras versiones:** extender la traducción EN/ES a **toda la
+> app** (menú, partida, modales, tutorial) — ver tarea **3.4**. La infraestructura
+> ya está lista; solo se implementará cuando se solicite explícitamente.
