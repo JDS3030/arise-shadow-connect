@@ -13,6 +13,27 @@ y el proyecto usa [Versionado Semántico](https://semver.org/lang/es/) (`MAJOR.M
 
 ---
 
+## [1.5.0] — 2026-07-09
+
+### Added
+- **Pantalla de entrada estilo Solo Leveling** (`#entranceScreen`): nueva pantalla
+  de bienvenida (la primera que se ve) con portal animado, título **ARISE** con
+  glow, ventana de notificación del Sistema y botón **ENTER THE GATE** que lleva
+  al menú (`enterApp()`).
+- **Internacionalización EN/ES** (base): diccionario `I18N` en `game.js`, atributos
+  `data-i18n` en el HTML y `applyLang()`/`setLang()`. El idioma inicial se toma de
+  la preferencia guardada (`sc_lang` en `localStorage`) o del idioma del navegador
+  (`navigator.language`), con inglés como versión activa por defecto. Selector
+  visible EN/ES en la entrada; en español el título muestra **SURGE** y los textos
+  se traducen. Diseño de referencia en `solo-leveling.pen`.
+
+### Notes
+- Fuente `Geist Mono` añadida al CDN de Google Fonts para las etiquetas técnicas.
+- Contrato intacto: `checkWin`/`placeOrb`/`updateUI` sin cambios; el menú sigue
+  cargando (ahora tras la entrada). Tests de smoke nuevos para la entrada + idioma.
+
+---
+
 ## [1.4.0] — 2026-07-09
 
 ### Added

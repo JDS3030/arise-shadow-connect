@@ -26,6 +26,52 @@ P.exp = +localStorage.getItem('sc_exp') || 0;
 P.ranking = JSON.parse(localStorage.getItem('sc_ranking') || '[]');
 
 // ═══════════════════════════════════════════════════
+// i18n · IDIOMA (pantalla de entrada · EN/ES)
+// Versión activa: inglés. El español se muestra según la preferencia
+// del usuario (toggle EN/ES) o el idioma del navegador. Añadir claves
+// aquí para extender la traducción a más pantallas en el futuro.
+// ═══════════════════════════════════════════════════
+const I18N = {
+  en:{
+    'ent.system':'THE SYSTEM',
+    'ent.title':'ARISE',
+    'ent.sub':'SHADOW CONNECT',
+    'ent.notif':'NOTIFICATION',
+    'ent.body':'You have acquired the qualifications to become a Player. Will you accept?',
+    'ent.cta':'ENTER THE GATE',
+    'ent.hint':'TAP TO ACCEPT THE SYSTEM',
+  },
+  es:{
+    'ent.system':'EL SISTEMA',
+    'ent.title':'SURGE',
+    'ent.sub':'CONEXIÓN DE SOMBRAS',
+    'ent.notif':'NOTIFICACIÓN',
+    'ent.body':'Has adquirido las cualidades para convertirte en Jugador. ¿Aceptas?',
+    'ent.cta':'ENTRAR AL PORTAL',
+    'ent.hint':'TOCA PARA ACEPTAR EL SISTEMA',
+  },
+};
+// Preferencia guardada → idioma del navegador → inglés (versión activa).
+let lang = localStorage.getItem('sc_lang')
+  || ((navigator.language||'en').toLowerCase().startsWith('es') ? 'es' : 'en');
+
+function applyLang(l){
+  lang = I18N[l] ? l : 'en';
+  try{ localStorage.setItem('sc_lang',lang); }catch(e){}
+  const dict = I18N[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(dict[k]!==undefined) el.textContent=dict[k];
+  });
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  const ent=document.getElementById('entranceScreen');
+  if(ent){ ent.classList.toggle('lang-es',lang==='es'); ent.classList.toggle('lang-en',lang==='en'); }
+  document.documentElement.lang=lang;
+}
+function setLang(l){ applyLang(l); playTone(l==='es'?360:440,.08); }
+function enterApp(){ show('menuScreen'); playTone(520,.12); }
+
+// ═══════════════════════════════════════════════════
 // PLAYER / RANK UI
 // ═══════════════════════════════════════════════════
 function updatePlayerUI(){
@@ -612,6 +658,7 @@ function playTone(freq,dur){
 Object.assign(window, {
   setType, openOrbSelect, startGameFromSelect, showRanking, showInfo,
   pauseGame, resumeGame, restartRound, goMenu, closeModal, showTutorial,
+  enterApp,
 });
 
 // ═══════════════════════════════════════════════════
@@ -620,6 +667,9 @@ Object.assign(window, {
 document.querySelectorAll('#aiShade .shade-btn').forEach(b=>{
   b.onclick=()=>{ aiShade=b.dataset.shade; updateShadeSelector(); playTone(360,.08); };
 });
+// Selector de idioma (pantalla de entrada) + aplicar idioma inicial.
+document.querySelectorAll('.lang-btn').forEach(b=>{ b.onclick=()=>setLang(b.dataset.lang); });
+applyLang(lang);
 // Botones del tutorial + reposicionar al redimensionar/rotar.
 document.getElementById('tutNext').onclick=tutNext;
 document.getElementById('tutPrev').onclick=tutPrev;

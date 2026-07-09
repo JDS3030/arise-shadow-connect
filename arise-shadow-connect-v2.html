@@ -4,14 +4,79 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>ARISE — Shadow Connect</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div id="app">
 
+<!-- ══ ENTRANCE (Solo Leveling · i18n EN/ES) ══════════ -->
+<div id="entranceScreen" class="screen entrance active">
+  <div class="ent-atmos" aria-hidden="true">
+    <span class="ent-glow g-cyan"></span>
+    <span class="ent-glow g-purple"></span>
+    <span class="ent-streak s1"></span>
+    <span class="ent-streak s2"></span>
+    <span class="ent-streak s3"></span>
+  </div>
+
+  <div class="ent-lang" role="group" aria-label="Language">
+    <button class="lang-btn" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="es">ES</button>
+  </div>
+
+  <div class="ent-content">
+    <div class="ent-badge">
+      <span class="ent-diamond">◆</span>
+      <span data-i18n="ent.system">THE SYSTEM</span>
+    </div>
+
+    <div class="ent-hero">
+      <div class="ent-portal">
+        <span class="ring"></span>
+        <span class="core"></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"></polyline>
+          <line x1="13" y1="19" x2="19" y2="13"></line>
+          <line x1="16" y1="16" x2="20" y2="20"></line>
+          <line x1="19" y1="21" x2="21" y2="19"></line>
+          <polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"></polyline>
+          <line x1="5" y1="14" x2="9" y2="18"></line>
+          <line x1="7" y1="17" x2="4" y2="20"></line>
+          <line x1="3" y1="19" x2="5" y2="21"></line>
+        </svg>
+      </div>
+
+      <h1 class="ent-title" data-i18n="ent.title">ARISE</h1>
+      <p class="ent-sub" data-i18n="ent.sub">SHADOW CONNECT</p>
+
+      <div class="sys-window">
+        <div class="sys-head">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+          </svg>
+          <span data-i18n="ent.notif">NOTIFICATION</span>
+        </div>
+        <div class="sys-body" data-i18n="ent.body">You have acquired the qualifications to become a Player. Will you accept?</div>
+      </div>
+    </div>
+
+    <div class="ent-bottom">
+      <button class="ent-btn" onclick="enterApp()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m17 11-5-5-5 5"></path>
+          <path d="m17 18-5-5-5 5"></path>
+        </svg>
+        <span data-i18n="ent.cta">ENTER THE GATE</span>
+      </button>
+      <div class="ent-hint" data-i18n="ent.hint">TAP TO ACCEPT THE SYSTEM</div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ MENU ══════════════════════════════════════════ -->
-<div id="menuScreen" class="screen active">
+<div id="menuScreen" class="screen">
   <div class="hero">
     <h1 class="arise-title">ARISE</h1>
     <p class="subtitle">SHADOW CONNECT</p>
@@ -62,7 +127,7 @@
     </button>
   </div>
 
-  <div class="app-version">v1.4.0 · SHADOW ABILITIES</div>
+  <div class="app-version">v1.5.0 · ENTRANCE + i18n</div>
 </div>
 
 <!-- ══ GAME ══════════════════════════════════════════ -->

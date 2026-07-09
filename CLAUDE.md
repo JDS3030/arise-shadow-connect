@@ -162,7 +162,7 @@ Prioridad fija: `findWin(2)` → `findWin(1)` → `findStrategic()` → `randMov
 
 El proyecto usa **Versionado Semántico** (`MAJOR.MINOR.PATCH`). El historial
 completo vive en `CHANGELOG.md` y la versión canónica en `package.json`.
-Versión actual: **1.4.0**. Regla: feature nueva → MINOR;
+Versión actual: **1.5.0**. Regla: feature nueva → MINOR;
 fix/refactor sin feature → PATCH; ruptura del contrato de baseline → MAJOR.
 
 ## Declaración de Baseline — v1.0 (2026-06-26)
