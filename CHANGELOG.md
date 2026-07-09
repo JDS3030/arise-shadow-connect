@@ -13,6 +13,24 @@ y el proyecto usa [Versionado Semántico](https://semver.org/lang/es/) (`MAJOR.M
 
 ---
 
+## [1.4.0] — 2026-07-09
+
+### Added
+- **Tutorial de bienvenida (coach-marks)**: al comenzar una partida por primera
+  vez, un recorrido guiado resalta cada parte de la pantalla (turno, tablero,
+  barra de habilidad, marcador) con tooltips paso a paso. El paso de habilidad
+  explica el poder del orbe elegido (nombre, efecto y cómo usarlo). Se recuerda
+  en `localStorage` (`sc_tutorial_v1`) y se puede reabrir con el botón “?” de la
+  barra superior.
+- Campo `how` en `ABILITIES` (cómo se usa cada habilidad) — fuente única para el
+  texto del tutorial.
+
+### Changed
+- **La opción por defecto al elegir modo es ahora “VS SOMBRA (IA)”** (antes VS
+  Jugador).
+
+---
+
 ## [1.3.0] — 2026-07-09
 
 ### Added

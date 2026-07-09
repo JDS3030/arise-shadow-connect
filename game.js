@@ -10,7 +10,7 @@ import {
 } from './game-logic.js';
 
 // ── Estado solo-navegador ─────────────────────────────
-let gameType = 'vs';
+let gameType = 'ai'; // opción por defecto: jugar contra la Sombra IA
 let audioCtx = null;
 let pendingAbility = null;   // {player, orbId, ab} mientras se elige objetivo
 let teleportFrom = null;     // 1er paso del Teletransporte
@@ -141,6 +141,7 @@ function startGame(n){
   if(aiShade) s2El.classList.add('o-shade-'+aiShade);
 
   buildGrid(); updateUI(); renderAbilityBar();
+  maybeAutoTutorial();
 }
 
 function buildGrid(){
@@ -496,6 +497,99 @@ function goMenu(){
 function showInfo(){openModal('infoModal');}
 
 // ═══════════════════════════════════════════════════
+// TUTORIAL (coach-marks) · resalta cada elemento y explica la habilidad
+// ═══════════════════════════════════════════════════
+let tutorialStep = 0;
+let tutSteps = [];
+const TUT_KEY = 'sc_tutorial_v1';
+
+function buildTutorialSteps(){
+  const orbId = G.currentPlayer===1 ? G.p1Orb : G.p2Orb;
+  const ab = ABILITIES[orbId] || ABILITIES[G.p1Orb];
+  const rival = G.vsAI
+    ? 'La Sombra IA también tiene la habilidad de su orbe.'
+    : 'Cada jugador tiene la habilidad de su propio orbe.';
+  return [
+    { target:null, title:'¡Bienvenido a Shadow Connect!',
+      text:`El objetivo: conecta ${G.connect} orbes en línea —horizontal, vertical o diagonal— antes que tu rival.` },
+    { target:'.cur-player', title:'Turno actual',
+      text:'Aquí ves de quién es el turno y con qué orbe juega. Arriba a la derecha está el número de turno.' },
+    { target:'#gameGrid', title:'El tablero',
+      text:'Toca una celda para colocar tu orbe. Se resalta la columna bajo el cursor como guía visual.' },
+    { target:'#abilityBar', title:`Tu habilidad: ${ab.name} ${ab.icon}`,
+      text:`${ab.desc}. ${ab.how} Solo se usa 1 vez por partida. ${rival}` },
+    { target:'.scores-row', title:'Marcador y controles',
+      text:'El marcador lleva las rondas ganadas. Abajo empiezas una nueva ronda o vuelves al menú; arriba a la izquierda puedes pausar o reabrir esta ayuda con “?”.' },
+  ];
+}
+
+function startTutorial(){
+  if(!document.getElementById('gameScreen').classList.contains('active')) return;
+  tutSteps = buildTutorialSteps();
+  tutorialStep = 0;
+  document.getElementById('tutorialOverlay').classList.add('active');
+  renderTutorialStep();
+}
+
+function renderTutorialStep(){
+  const s = tutSteps[tutorialStep];
+  if(!s) return;
+  document.getElementById('tutStep').textContent = `${tutorialStep+1}/${tutSteps.length}`;
+  document.getElementById('tutTitle').textContent = s.title;
+  document.getElementById('tutText').textContent = s.text;
+  document.getElementById('tutPrev').style.visibility = tutorialStep===0 ? 'hidden' : 'visible';
+  document.getElementById('tutNext').textContent = tutorialStep===tutSteps.length-1 ? '¡A jugar!' : 'Siguiente ›';
+
+  const hole = document.getElementById('tutorialHole');
+  const tip = document.getElementById('tutorialTip');
+  const el = s.target ? document.querySelector(s.target) : null;
+  const pad = 8;
+
+  if(el && el.getBoundingClientRect){
+    const r = el.getBoundingClientRect();
+    hole.style.display = 'block';
+    hole.style.left = (r.left - pad) + 'px';
+    hole.style.top = (r.top - pad) + 'px';
+    hole.style.width = (r.width + pad*2) + 'px';
+    hole.style.height = (r.height + pad*2) + 'px';
+    positionTip(tip, r);
+  } else {
+    // Paso de bienvenida: hueco nulo (todo oscuro) + tooltip centrado.
+    hole.style.display = 'block';
+    hole.style.width = '0px'; hole.style.height = '0px';
+    hole.style.left = '50%'; hole.style.top = '45%';
+    tip.style.transform = 'translate(-50%,-50%)';
+    tip.style.left = '50%'; tip.style.top = '50%';
+  }
+}
+
+function positionTip(tip, r){
+  tip.style.transform = 'none';
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const tipW = Math.min(300, vw - 32);
+  tip.style.width = tipW + 'px';
+  const tipH = tip.offsetHeight || 170;
+  let top = (r.bottom + tipH + 16 < vh) ? r.bottom + 12 : Math.max(12, r.top - tipH - 12);
+  let left = r.left + r.width/2 - tipW/2;
+  left = Math.max(12, Math.min(left, vw - tipW - 12));
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+}
+
+function tutNext(){ if(tutorialStep < tutSteps.length-1){ tutorialStep++; renderTutorialStep(); } else endTutorial(); }
+function tutPrev(){ if(tutorialStep > 0){ tutorialStep--; renderTutorialStep(); } }
+function endTutorial(){
+  document.getElementById('tutorialOverlay').classList.remove('active');
+  try{ localStorage.setItem(TUT_KEY,'1'); }catch(e){}
+}
+function showTutorial(){ startTutorial(); }               // reproducir manualmente
+function maybeAutoTutorial(){
+  let seen = false;
+  try{ seen = !!localStorage.getItem(TUT_KEY); }catch(e){}
+  if(!seen) setTimeout(startTutorial, 350);
+}
+
+// ═══════════════════════════════════════════════════
 // AUDIO
 // ═══════════════════════════════════════════════════
 function playTone(freq,dur){
@@ -517,7 +611,7 @@ function playTone(freq,dur){
 // ═══════════════════════════════════════════════════
 Object.assign(window, {
   setType, openOrbSelect, startGameFromSelect, showRanking, showInfo,
-  pauseGame, resumeGame, restartRound, goMenu, closeModal,
+  pauseGame, resumeGame, restartRound, goMenu, closeModal, showTutorial,
 });
 
 // ═══════════════════════════════════════════════════
@@ -525,5 +619,12 @@ Object.assign(window, {
 // ═══════════════════════════════════════════════════
 document.querySelectorAll('#aiShade .shade-btn').forEach(b=>{
   b.onclick=()=>{ aiShade=b.dataset.shade; updateShadeSelector(); playTone(360,.08); };
+});
+// Botones del tutorial + reposicionar al redimensionar/rotar.
+document.getElementById('tutNext').onclick=tutNext;
+document.getElementById('tutPrev').onclick=tutPrev;
+document.getElementById('tutSkip').onclick=endTutorial;
+window.addEventListener('resize',()=>{
+  if(document.getElementById('tutorialOverlay').classList.contains('active')) renderTutorialStep();
 });
 updatePlayerUI();

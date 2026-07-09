@@ -29,8 +29,8 @@
   </div>
 
   <div class="type-toggle">
-    <button class="tt-btn active" onclick="setType('vs',this)">⚔️ VS JUGADOR</button>
-    <button class="tt-btn" onclick="setType('ai',this)">🤖 VS SOMBRA (IA)</button>
+    <button class="tt-btn" onclick="setType('vs',this)">⚔️ VS JUGADOR</button>
+    <button class="tt-btn active" onclick="setType('ai',this)">🤖 VS SOMBRA (IA)</button>
   </div>
 
   <div>
@@ -62,15 +62,20 @@
     </button>
   </div>
 
-  <div class="app-version">v1.3.0 · SHADOW ABILITIES</div>
+  <div class="app-version">v1.4.0 · SHADOW ABILITIES</div>
 </div>
 
 <!-- ══ GAME ══════════════════════════════════════════ -->
 <div id="gameScreen" class="screen">
   <div class="top-bar">
-    <button class="icon-btn" onclick="pauseGame()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
-    </button>
+    <div class="tb-left">
+      <button class="icon-btn" onclick="pauseGame()" title="Pausa">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+      </button>
+      <button class="icon-btn" onclick="showTutorial()" title="Cómo jugar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+      </button>
+    </div>
     <span class="mode-label" id="modeLabel">CONNECT 4</span>
     <div class="turn-badge" id="turnBadge">Turno 1</div>
   </div>
@@ -204,6 +209,21 @@
       <span class="re">E</span> → <span class="rd">D (500)</span> → <span class="rc">C (1500)</span> → <span class="rb">B (3500)</span> → <span class="ra">A (7000)</span> → <span class="rs">S (15000)</span>
     </div>
     <div class="modal-btns"><button class="modal-btn secondary" onclick="closeModal('infoModal')">CERRAR</button></div>
+  </div>
+</div>
+
+<!-- ══ TUTORIAL (coach-marks) ══════════════════════════ -->
+<div id="tutorialOverlay" class="tut-overlay">
+  <div id="tutorialHole" class="tut-hole"></div>
+  <div id="tutorialTip" class="tut-tip">
+    <div class="tut-step" id="tutStep">1/5</div>
+    <div class="tut-title" id="tutTitle"></div>
+    <div class="tut-text" id="tutText"></div>
+    <div class="tut-btns">
+      <button class="tut-btn ghost" id="tutSkip">Saltar</button>
+      <button class="tut-btn ghost" id="tutPrev">‹ Anterior</button>
+      <button class="tut-btn primary" id="tutNext">Siguiente ›</button>
+    </div>
   </div>
 </div>
 

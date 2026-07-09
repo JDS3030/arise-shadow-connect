@@ -26,11 +26,11 @@ export const WALL = 3;
 // uso por partida. `id` identifica el efecto; `mode` orienta la UI de objetivo.
 // mode: 'self' (sin objetivo) · 'any' · 'empty' · 'enemy' · 'move'
 export const ABILITIES = {
-  hunter: { id: 'double',    name: 'Doble Jugada',    icon: '⚔️', desc: 'Coloca 2 fichas en un turno', mode: 'self'  },
-  power:  { id: 'blackhole', name: 'Hoyo Negro',      icon: '🕳️', desc: 'Absorbe un área 3×3',        mode: 'any'   },
-  shadow: { id: 'steal',     name: 'Robo de Sombra',  icon: '🌑', desc: 'Roba una ficha enemiga',      mode: 'enemy' },
-  magic:  { id: 'teleport',  name: 'Teletransporte',  icon: '✨', desc: 'Mueve una ficha tuya',        mode: 'move'  },
-  gold:   { id: 'wall',      name: 'Muro Dorado',     icon: '⭐', desc: 'Bloquea una celda',           mode: 'empty' },
+  hunter: { id: 'double',    name: 'Doble Jugada',    icon: '⚔️', desc: 'Coloca 2 fichas en un turno', mode: 'self',  how: 'Actívala y coloca 2 fichas seguidas.' },
+  power:  { id: 'blackhole', name: 'Hoyo Negro',      icon: '🕳️', desc: 'Absorbe un área 3×3',        mode: 'any',   how: 'Actívala y elige el centro del área 3×3 a limpiar.' },
+  shadow: { id: 'steal',     name: 'Robo de Sombra',  icon: '🌑', desc: 'Roba una ficha enemiga',      mode: 'enemy', how: 'Actívala y elige una ficha enemiga para robarla.' },
+  magic:  { id: 'teleport',  name: 'Teletransporte',  icon: '✨', desc: 'Mueve una ficha tuya',        mode: 'move',  how: 'Actívala, elige tu ficha y luego la celda vacía de destino.' },
+  gold:   { id: 'wall',      name: 'Muro Dorado',     icon: '⭐', desc: 'Bloquea una celda',           mode: 'empty', how: 'Actívala y elige una celda vacía para bloquearla.' },
 };
 
 // ═══════════════════════════════════════════════════

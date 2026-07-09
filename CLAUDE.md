@@ -106,7 +106,7 @@ G = {
 ORBS      // array de 5 orbes — {id, name, cls, icon, col, glow}
 RANKS     // E(0) D(400) C(1500) B(3500) A(7000) S(15000)
 WALL      // = 3 · valor de celda para un Muro Dorado (0=vacía,1=p1,2=p2,3=muro)
-ABILITIES // mapa orbId → {id, name, icon, desc, mode} · 1 poder por orbe (v1.1.0)
+ABILITIES // mapa orbId → {id, name, icon, desc, mode, how} · 1 poder por orbe (v1.1.0)
 ```
 
 ### Habilidades (v1.1.0) — 1 orbe = 1 poder, 1 uso por partida
@@ -162,7 +162,7 @@ Prioridad fija: `findWin(2)` → `findWin(1)` → `findStrategic()` → `randMov
 
 El proyecto usa **Versionado Semántico** (`MAJOR.MINOR.PATCH`). El historial
 completo vive en `CHANGELOG.md` y la versión canónica en `package.json`.
-Versión actual: **1.3.0**. Regla: feature nueva → MINOR;
+Versión actual: **1.4.0**. Regla: feature nueva → MINOR;
 fix/refactor sin feature → PATCH; ruptura del contrato de baseline → MAJOR.
 
 ## Declaración de Baseline — v1.0 (2026-06-26)

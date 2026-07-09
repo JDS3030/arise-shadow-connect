@@ -76,6 +76,7 @@ html,body{width:100%;height:100%;background:#000;display:flex;justify-content:ce
 /* ── GAME SCREEN ── */
 #gameScreen{padding:12px 16px 20px;}
 .top-bar{display:flex;justify-content:space-between;align-items:center;padding:4px 0 12px;}
+.tb-left{display:flex;gap:8px;}
 .icon-btn{width:42px;height:42px;border-radius:12px;background:var(--card);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t1);transition:all .2s;}
 .icon-btn:hover{background:var(--card2);}
 .mode-label{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:var(--t1);}
@@ -167,6 +168,22 @@ html,body{width:100%;height:100%;background:#000;display:flex;justify-content:ce
 
 /* ── VERSIÓN ── */
 .app-version{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--tm);text-align:center;letter-spacing:2px;margin-top:12px;}
+
+/* ── TUTORIAL (coach-marks) ── */
+.tut-overlay{display:none;position:fixed;inset:0;z-index:180;}
+.tut-overlay.active{display:block;}
+.tut-hole{position:absolute;border-radius:14px;box-shadow:0 0 0 9999px rgba(5,4,12,.82);transition:all .25s ease;pointer-events:none;border:2px solid rgba(139,92,246,.7);}
+.tut-tip{position:absolute;width:300px;max-width:calc(100vw - 32px);background:var(--bg2);border:1px solid rgba(139,92,246,.45);border-radius:16px;padding:16px 18px;box-shadow:0 12px 40px rgba(0,0,0,.6);}
+.tut-step{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--purple);letter-spacing:2px;margin-bottom:6px;}
+.tut-title{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:var(--t1);margin-bottom:8px;}
+.tut-text{font-size:13px;color:var(--t2);line-height:1.55;margin-bottom:14px;}
+.tut-btns{display:flex;gap:8px;justify-content:flex-end;align-items:center;}
+.tut-btn{padding:9px 14px;border:none;border-radius:10px;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;}
+.tut-btn.primary{background:linear-gradient(135deg,var(--purple),var(--pdark));color:#fff;}
+.tut-btn.ghost{background:var(--card);color:var(--t2);}
+.tut-btn.primary:hover{transform:translateY(-1px);filter:brightness(1.1);}
+.tut-btn.ghost:hover{background:var(--card2);color:var(--t1);}
+.tut-btn#tutSkip{margin-right:auto;}
 
 /* ── TIP DE HABILIDAD EN SELECTOR DE ORBE ── */
 .orb-ability{margin-top:10px;font-size:11px;color:var(--t2);text-align:center;min-height:16px;line-height:1.4;}
