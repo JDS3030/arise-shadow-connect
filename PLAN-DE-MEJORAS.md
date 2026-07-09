@@ -88,7 +88,7 @@
 | 5.1 | Botón de **silenciar sonido** (mute) con preferencia guardada. | 🟢 | ⏱️ | Bajo |
 | 5.2 | Marcar visualmente la **última jugada**. | 🟢 | ⏱️ | Bajo |
 | 5.3 | **Accesibilidad**: navegación por teclado y ARIA en las celdas (hoy son `<div>` con click). | 🟢 | ⏱️⏱️ | Bajo |
-| 5.4 | ✅ Conectar **auto-deploy** Vercel↔GitHub (cada `git push` publica solo). *(2026-07-09)* | 🟢 | ⏱️ | Bajo |
+| 5.4 | 🟡 Conectar **auto-deploy** Vercel↔GitHub (cada `git push` publica solo). *En progreso: falta que la Vercel GitHub App tenga acceso al repo; el push aún no dispara deploy.* | 🟢 | ⏱️ | Bajo |
 
 **Criterio de aceptación:** juego pulido, usable con teclado, y despliegue automático activo.
 
