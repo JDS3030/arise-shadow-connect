@@ -18,6 +18,21 @@ export const RANKS = [
   { n: 'S', exp: 15000, cls: 'rs' },
 ];
 
+// Valor de celda para un Muro Dorado (bloqueada; ni victoria ni jugada).
+// La cuadrícula usa: 0=vacía, 1=p1, 2=p2, 3=muro.
+export const WALL = 3;
+
+// Habilidades de sombra (v1.1.0). Cada orbe otorga un poder único de un solo
+// uso por partida. `id` identifica el efecto; `mode` orienta la UI de objetivo.
+// mode: 'self' (sin objetivo) · 'any' · 'empty' · 'enemy' · 'move'
+export const ABILITIES = {
+  hunter: { id: 'double',    name: 'Doble Jugada',    icon: '⚔️', desc: 'Coloca 2 fichas en un turno', mode: 'self'  },
+  power:  { id: 'blackhole', name: 'Hoyo Negro',      icon: '🕳️', desc: 'Absorbe un área 3×3',        mode: 'any'   },
+  shadow: { id: 'steal',     name: 'Robo de Sombra',  icon: '🌑', desc: 'Roba una ficha enemiga',      mode: 'enemy' },
+  magic:  { id: 'teleport',  name: 'Teletransporte',  icon: '✨', desc: 'Mueve una ficha tuya',        mode: 'move'  },
+  gold:   { id: 'wall',      name: 'Muro Dorado',     icon: '⭐', desc: 'Bloquea una celda',           mode: 'empty' },
+};
+
 // ═══════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════
@@ -26,6 +41,7 @@ export let G = {
   isOver: false, isPaused: false, vsAI: false,
   scores: { p1: 0, p2: 0, draw: 0 }, winCells: [],
   p1Orb: 'hunter', p2Orb: 'power', pendingConnect: 4,
+  abilityUsed: { 1: false, 2: false }, // habilidad de un solo uso por partida
 };
 
 export let P = {
@@ -44,6 +60,7 @@ export function resetG(connect = 4) {
   G.isPaused = false;
   G.vsAI = false;
   G.winCells = [];
+  G.abilityUsed = { 1: false, 2: false };
 }
 
 // ═══════════════════════════════════════════════════
@@ -129,4 +146,91 @@ export function saveRank() {
   P.ranking.sort((a, b) => b.score - a.score);
   P.ranking = P.ranking.slice(0, 10);
   localStorage.setItem('sc_ranking', JSON.stringify(P.ranking));
+}
+
+// ═══════════════════════════════════════════════════
+// HABILIDADES (lógica pura · mutan G.grid, sin DOM)
+// ═══════════════════════════════════════════════════
+
+// Devuelve la definición de habilidad de un orbe (o undefined).
+export function abilityFor(orbId) {
+  return ABILITIES[orbId];
+}
+
+// 🕳️ Hoyo Negro — absorbe el área 3×3 centrada en (r,c): vacía toda ficha
+// o muro dentro del rango. Devuelve las celdas que fueron limpiadas.
+export function blackHole(r, c) {
+  const cleared = [];
+  for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+    const nr = r + dr, nc = c + dc;
+    if (nr >= 0 && nr < G.gridSize && nc >= 0 && nc < G.gridSize && G.grid[nr][nc] !== 0) {
+      G.grid[nr][nc] = 0;
+      cleared.push([nr, nc]);
+    }
+  }
+  return cleared;
+}
+
+// 🌑 Robo de Sombra — convierte la ficha enemiga en (r,c) en propia de `player`.
+// Devuelve true si el robo fue válido.
+export function stealCell(r, c, player) {
+  const enemy = player === 1 ? 2 : 1;
+  if (G.grid[r][c] !== enemy) return false;
+  G.grid[r][c] = player;
+  return true;
+}
+
+// ✨ Teletransporte — mueve la ficha propia de (fr,fc) a la celda vacía (tr,tc).
+// Devuelve true si el movimiento fue válido.
+export function teleportCell(fr, fc, tr, tc, player) {
+  if (G.grid[fr][fc] !== player) return false;
+  if (G.grid[tr][tc] !== 0) return false;
+  G.grid[fr][fc] = 0;
+  G.grid[tr][tc] = player;
+  return true;
+}
+
+// ⭐ Muro Dorado — bloquea una celda vacía (nadie puede jugar ni ganar en ella).
+// Devuelve true si se pudo bloquear.
+export function blockCell(r, c) {
+  if (G.grid[r][c] !== 0) return false;
+  G.grid[r][c] = WALL;
+  return true;
+}
+
+// Decisión de habilidad de la IA (jugador 2). Estrategia defensiva: si el
+// humano amenaza victoria inmediata y la IA no puede ganar este turno, usa su
+// poder para neutralizar la amenaza. Devuelve una acción o null (guardar poder).
+export function aiAbilityMove(orbId) {
+  const ability = ABILITIES[orbId];
+  if (!ability) return null;
+  if (findWin(2)) return null;      // si puede ganar ya, que gane normal
+  const t = findWin(1);             // ¿el humano amenaza ganar?
+  if (!t) return null;              // sin amenaza → conserva la habilidad
+  switch (ability.id) {
+    case 'blackhole':
+      return { id: 'blackhole', r: t.r, c: t.c };
+    case 'wall':
+      return { id: 'wall', r: t.r, c: t.c };
+    case 'double':
+      // primera jugada: tapar la celda ganadora; la segunda la decide la capa DOM
+      return { id: 'double', r: t.r, c: t.c };
+    case 'steal': {
+      // roba una ficha enemiga adyacente a la celda ganadora (rompe la línea)
+      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+        const nr = t.r + dr, nc = t.c + dc;
+        if (nr >= 0 && nr < G.gridSize && nc >= 0 && nc < G.gridSize && G.grid[nr][nc] === 1)
+          return { id: 'steal', r: nr, c: nc };
+      }
+      return null;
+    }
+    case 'teleport': {
+      // mueve una ficha propia sobre la celda ganadora del humano (la bloquea)
+      for (let r = 0; r < G.gridSize; r++) for (let c = 0; c < G.gridSize; c++)
+        if (G.grid[r][c] === 2)
+          return { id: 'teleport', fr: r, fc: c, tr: t.r, tc: t.c };
+      return null;
+    }
+  }
+  return null;
 }

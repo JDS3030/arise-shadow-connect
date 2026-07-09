@@ -61,6 +61,8 @@
       INFO
     </button>
   </div>
+
+  <div class="app-version">v1.1.0 · SHADOW ABILITIES</div>
 </div>
 
 <!-- ══ GAME ══════════════════════════════════════════ -->
@@ -85,6 +87,8 @@
       <div class="game-grid" id="gameGrid"></div>
     </div>
   </div>
+
+  <div class="ability-bar" id="abilityBar"></div>
 
   <div class="scores-row">
     <div class="score-item">
@@ -118,10 +122,12 @@
     <div style="margin:16px 0;">
       <div class="orb-select-title" id="p1OrbLabel">JUGADOR 1</div>
       <div class="orb-options" id="p1Orbs"></div>
+      <div class="orb-ability" id="p1OrbsAbility"></div>
     </div>
     <div id="p2OrbSection" style="margin:16px 0;">
       <div class="orb-select-title" id="p2OrbLabel">JUGADOR 2</div>
       <div class="orb-options" id="p2Orbs"></div>
+      <div class="orb-ability" id="p2OrbsAbility"></div>
     </div>
     <div class="modal-btns">
       <button class="modal-btn primary" onclick="startGameFromSelect()">⚔️ COMENZAR</button>
@@ -180,8 +186,13 @@
       • Puedes conectar horizontal, vertical o diagonal<br>
       • El primero en conectar gana la ronda<br>
       • ¡También puedes jugar vs la Sombra IA!<br><br>
-      <strong>Orbes de Sombra:</strong><br>
-      ⚔️ Hunter · 🌑 Shadow · ✨ Magic · 🔥 Power · ⭐ Gold<br><br>
+      <strong>Habilidades de Sombra (1 uso por partida):</strong><br>
+      ⚔️ <b>Hunter</b> — Doble Jugada: coloca 2 fichas en un turno<br>
+      🕳️ <b>Power</b> — Hoyo Negro: absorbe un área de 3×3<br>
+      🌑 <b>Shadow</b> — Robo de Sombra: roba una ficha enemiga<br>
+      ✨ <b>Magic</b> — Teletransporte: mueve una ficha tuya<br>
+      ⭐ <b>Gold</b> — Muro Dorado: bloquea una celda<br>
+      <em>La Sombra IA también usa su habilidad.</em><br><br>
       <strong>Sistema de Rangos:</strong><br>
       <span class="re">E</span> → <span class="rd">D (500)</span> → <span class="rc">C (1500)</span> → <span class="rb">B (3500)</span> → <span class="ra">A (7000)</span> → <span class="rs">S (15000)</span>
     </div>

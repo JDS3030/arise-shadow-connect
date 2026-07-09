@@ -103,9 +103,31 @@ G = {
 ## Constantes (`game-logic.js`, exportadas)
 
 ```js
-ORBS   // L4:  array de 5 orbes — {id, name, cls, icon, col, glow}
-RANKS  // L12: E(0) D(400) C(1500) B(3500) A(7000) S(15000)
+ORBS      // array de 5 orbes — {id, name, cls, icon, col, glow}
+RANKS     // E(0) D(400) C(1500) B(3500) A(7000) S(15000)
+WALL      // = 3 · valor de celda para un Muro Dorado (0=vacía,1=p1,2=p2,3=muro)
+ABILITIES // mapa orbId → {id, name, icon, desc, mode} · 1 poder por orbe (v1.1.0)
 ```
+
+### Habilidades (v1.1.0) — 1 orbe = 1 poder, 1 uso por partida
+
+Lógica pura en `game-logic.js`; orquestación/DOM en `game.js`. Cada jugador
+(incluida la IA) usa su poder una vez. Funciones puras (mutan `G.grid`, sin DOM):
+
+| Función | Habilidad | Efecto |
+|---|---|---|
+| `blackHole(r,c)` | 🕳️ Power · Hoyo Negro | Vacía el área 3×3 centrada en (r,c) |
+| `stealCell(r,c,p)` | 🌑 Shadow · Robo de Sombra | Convierte ficha enemiga en (r,c) en propia de `p` |
+| `teleportCell(fr,fc,tr,tc,p)` | ✨ Magic · Teletransporte | Mueve ficha propia a celda vacía |
+| `blockCell(r,c)` | ⭐ Gold · Muro Dorado | Marca la celda vacía como `WALL` |
+| Doble Jugada | ⚔️ Hunter | Sin función pura: `extraPlacements` en `game.js` da 1 ficha extra |
+| `aiAbilityMove(orbId)` | — | Decisión defensiva de habilidad para la IA (jugador 2) |
+
+`G.abilityUsed = {1,2}` rastrea el uso; se reinicia en `resetG()`, `startGame()`
+y `restartRound()`. En `game.js`: `renderAbilityBar()`, `activateAbility()`,
+`handleAbilityTarget()` (modo objetivo), `afterAbility()`/`endTurn()`,
+`aiTurn()`/`aiUseAbility()`. Los muros (`WALL`) no rompen `checkWin` (nunca
+igualan a 1/2) y quedan excluidos de `findWin`/`findStrategic`/`randMove` (≠0).
 
 ## Convenciones de código
 
@@ -135,6 +157,13 @@ Prioridad fija: `findWin(2)` → `findWin(1)` → `findStrategic()` → `randMov
 `playTone(freq, dur)` usa Web Audio API. `audioCtx` se inicializa en el primer uso (política de autoplay).
 
 ---
+
+## Versionado
+
+El proyecto usa **Versionado Semántico** (`MAJOR.MINOR.PATCH`). El historial
+completo vive en `CHANGELOG.md` y la versión canónica en `package.json`.
+Versión actual: **1.1.0** (Shadow Abilities). Regla: feature nueva → MINOR;
+fix/refactor sin feature → PATCH; ruptura del contrato de baseline → MAJOR.
 
 ## Declaración de Baseline — v1.0 (2026-06-26)
 

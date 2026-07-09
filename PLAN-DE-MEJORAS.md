@@ -119,5 +119,25 @@ FASE 1 (base sana)  →  FASE 2 (robustez)  →  FASE 3 (móvil/web)  →  FASE 
 | 1 | ✅ Completada | 2026-07-08 | Fuente única en `game-logic.js`; 44 tests + smoke-test + deploy OK |
 | 2 | ⬜ Pendiente | — | |
 | 3 | ⬜ Pendiente | — | |
-| 4 | ⬜ Pendiente | — | |
+| 4 | 🟡 Parcial | 2026-07-09 | 4.2 sigue pendiente; ver feature de habilidades abajo |
 | 5 | ⬜ Pendiente | — | |
+
+---
+
+## Feature fuera de fase — Habilidades de Sombra (v1.1.0) ✅
+
+*Entregada 2026-07-09. Ver `CHANGELOG.md`.*
+
+Cada orbe otorga un poder único de un solo uso por partida (la elección de orbe
+antes era solo cosmética). La IA también usa su habilidad.
+
+| Orbe | Habilidad | Efecto |
+|---|---|---|
+| ⚔️ Hunter | Doble Jugada | 2 fichas en un turno |
+| 🕳️ Power | Hoyo Negro | Absorbe área 3×3 |
+| 🌑 Shadow | Robo de Sombra | Roba ficha enemiga |
+| ✨ Magic | Teletransporte | Mueve ficha propia |
+| ⭐ Gold | Muro Dorado | Bloquea una celda |
+
+> Se relaciona con la Fase 4 (jugabilidad/IA): la heurística de habilidad de la
+> IA es defensiva y simple; una IA más profunda (amenazas dobles) sigue en 4.2.
