@@ -6,3 +6,4 @@ html-report/
 vitest.config.js
 package.json
 package-lock.json
+deploy.ps1
